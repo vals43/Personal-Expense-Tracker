@@ -9,6 +9,14 @@ export const getExpensesFiltered = async (filters) => {
         values.push(filters.category_id);
         conditions.push(`category_id = $${idx++}`);
     }
+    if (filters.amount_min) {
+        values.push(filters.amount_min);
+        conditions.push(`amount >= $${idx++}`);
+    }
+    if (filters.amount_max) {
+        values.push(filters.amount_max);
+        conditions.push(`amount < $${idx++}`);
+    }
 
     if (filters.type) {
         values.push(filters.type);
