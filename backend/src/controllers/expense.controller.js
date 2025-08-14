@@ -30,12 +30,13 @@ export const addExpense = async (req, res) => {
 
 export const editExpense = async (req, res) => {
     try {
-        const expense = await updateExpense(req.params.id, req.body);
+        const expense = await updateExpense({ id: req.params.id, ...req.body });
         res.json(expense);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 export const removeExpense = async (req, res) => {
     try {
