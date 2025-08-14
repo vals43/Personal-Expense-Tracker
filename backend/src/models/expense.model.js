@@ -5,6 +5,29 @@ export const getAllExpenses = async () => {
     return result.rows;
 };
 
+export const getMonthExpenseDB = async (month) => {
+    const year = new Date().getFullYear();
+    const monthPadded = String(month).padStart(2, '0');
+
+    const startDate = `${year}-${monthPadded}-01`;
+    const endDate = `${year}-${monthPadded}-31`;
+
+    const query = `
+        SELECT * 
+        FROM expenses
+        WHERE 
+            (type = 'One-time' AND date BETWEEN $1 AND $2)
+        OR
+            (type = 'Recurring' AND start_date <= $3 AND (end_date IS NULL OR end_date >= $1))
+    `;
+
+    const values = [startDate, endDate, endDate];
+
+    const { rows } = await pool.query(query, values);
+    return rows;
+};
+
+
 export const getExpenseById = async (id) => {
     const result = await pool.query("SELECT * FROM expenses WHERE id = $1", [id]);
     return result.rows[0];

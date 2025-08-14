@@ -1,4 +1,4 @@
-import {getAllExpenses,getExpenseById,createExpense,updateExpense,deleteExpense} from "../models/expense.model.js";
+import {getAllExpenses,getExpenseById,createExpense,updateExpense,deleteExpense, getMonthExpenseDB} from "../models/expense.model.js";
 
 export const getExpenses = async (req, res) => {
     try {
@@ -18,6 +18,17 @@ export const getExpense = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+export const getMonthExpense = async (req, res) => {
+    try {
+        const month = req.params.month_id;
+        const expenses = await getMonthExpenseDB(month);
+        if (!expenses.length) return res.status(404).json({ error: "Not found" });
+        res.json(expenses);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 export const addExpense = async (req, res) => {
     try {
