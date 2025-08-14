@@ -1,27 +1,53 @@
 import { pool } from "../config/db.js";
 
-export const getAllExpenses = async () => {
-    const result = await pool.query("SELECT * FROM expenses ORDER BY date DESC");
-    return result.rows;
-};
+export const getExpensesFiltered = async (filters) => {
+    const conditions = [];
+    const values = [];
+    let idx = 1;
 
-export const getMonthExpenseDB = async (month) => {
-    const year = new Date().getFullYear();
-    const monthPadded = String(month).padStart(2, '0');
+    if (filters.category_id) {
+        values.push(filters.category_id);
+        conditions.push(`category_id = $${idx++}`);
+    }
 
-    const startDate = `${year}-${monthPadded}-01`;
-    const endDate = `${year}-${monthPadded}-31`;
+    if (filters.type) {
+        values.push(filters.type);
+        conditions.push(`type = $${idx++}`);
+    }
 
-    const query = `
-        SELECT * 
-        FROM expenses
-        WHERE 
-            (type = 'One-time' AND date BETWEEN $1 AND $2)
-        OR
-            (type = 'Recurring' AND start_date <= $3 AND (end_date IS NULL OR end_date >= $1))
-    `;
+    if (filters.month) {
+        const year = new Date().getFullYear();
+        const monthPadded = String(filters.month).padStart(2, '0');
+        const startMonth = `${year}-${monthPadded}-01`;
+        const endMonth = `${year}-${monthPadded}-31`;
 
-    const values = [startDate, endDate, endDate];
+        values.push(startMonth, endMonth, endMonth);
+        conditions.push(`(
+            (type = 'One-time' AND date BETWEEN $${idx} AND $${idx+1})
+            OR (type = 'Recurring' AND start_date <= $${idx+2} AND (end_date IS NULL OR end_date >= $${idx}))
+        )`);
+        idx += 3;
+    }
+
+    if (filters.day) {
+        const [yy, mm, dd] = filters.day.split('-');
+        const year = `20${yy}`;
+        const startDay = `${year}-${mm}-${dd}T00:00:00.000Z`;
+        const endDay = `${year}-${mm}-${dd}T23:59:59.999Z`;
+
+        values.push(startDay, endDay, endDay);
+        conditions.push(`(
+            (type = 'One-time' AND date BETWEEN $${idx} AND $${idx+1})
+            OR (type = 'Recurring' AND start_date <= $${idx+2} AND (end_date IS NULL OR end_date >= $${idx}))
+        )`);
+        idx += 3;
+    }
+
+    let query = "SELECT * FROM expenses";
+    if (conditions.length > 0) {
+        query += " WHERE " + conditions.join(" AND ");
+    }
+    query += " ORDER BY date DESC";
 
     const { rows } = await pool.query(query, values);
     return rows;

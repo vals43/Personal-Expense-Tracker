@@ -1,29 +1,26 @@
-import {getAllExpenses,getExpenseById,createExpense,updateExpense,deleteExpense, getMonthExpenseDB} from "../models/expense.model.js";
+import {getExpensesFiltered,getExpenseById,createExpense,updateExpense,deleteExpense} from "../models/expense.model.js";
 
 export const getExpenses = async (req, res) => {
     try {
-        const expenses = await getAllExpenses();
+        const { month, day, type, category_id } = req.query;
+        const filters = { month, day, type, category_id };
+
+        const expenses = await getExpensesFiltered(filters);
+        if (!expenses.length) return res.status(404).json({ error: "Not found" });
+
         res.json(expenses);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
+
 
 export const getExpense = async (req, res) => {
     try {
         const expense = await getExpenseById(req.params.id);
         if (!expense) return res.status(404).json({ error: "Not found" });
         res.json(expense);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-export const getMonthExpense = async (req, res) => {
-    try {
-        const month = req.params.month_id;
-        const expenses = await getMonthExpenseDB(month);
-        if (!expenses.length) return res.status(404).json({ error: "Not found" });
-        res.json(expenses);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
