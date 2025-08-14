@@ -2,8 +2,8 @@ import {getExpensesFiltered,getExpenseById,createExpense,updateExpense,deleteExp
 
 export const getExpenses = async (req, res) => {
     try {
-        const { month, day, type, category_id ,amount_min , amount_max } = req.query;
-        const filters = { month, day, type, category_id ,amount_min , amount_max };
+        const { month, day, type, category_id, amount_min, amount_max, start_date, end_date } = req.query;
+        const filters = { month, day, type, category_id, amount_min, amount_max, start_date, end_date };
 
         const expenses = await getExpensesFiltered(filters);
         if (!expenses.length) return res.status(404).json({ error: "Not found" });
@@ -13,6 +13,7 @@ export const getExpenses = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 
 

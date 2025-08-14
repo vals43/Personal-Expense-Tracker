@@ -9,18 +9,26 @@ export const getExpensesFiltered = async (filters) => {
         values.push(filters.category_id);
         conditions.push(`category_id = $${idx++}`);
     }
-    if (filters.amount_min) {
-        values.push(filters.amount_min);
-        conditions.push(`amount >= $${idx++}`);
-    }
-    if (filters.amount_max) {
-        values.push(filters.amount_max);
-        conditions.push(`amount < $${idx++}`);
-    }
 
     if (filters.type) {
         values.push(filters.type);
         conditions.push(`type = $${idx++}`);
+    }
+
+    if (filters.amount_min) {
+        values.push(filters.amount_min);
+        conditions.push(`amount >= $${idx++}`);
+    }
+
+    if (filters.amount_max) {
+        values.push(filters.amount_max);
+        conditions.push(`amount <= $${idx++}`);
+    }
+
+    if (filters.start_date && filters.end_date) {
+        values.push(filters.start_date, filters.end_date);
+        conditions.push(`date BETWEEN $${idx} AND $${idx+1}`);
+        idx += 2;
     }
 
     if (filters.month) {
@@ -60,6 +68,7 @@ export const getExpensesFiltered = async (filters) => {
     const { rows } = await pool.query(query, values);
     return rows;
 };
+
 
 
 export const getExpenseById = async (id) => {
