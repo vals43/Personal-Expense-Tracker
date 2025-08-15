@@ -1,46 +1,7 @@
 import { useState } from 'react'
-import { ExpenseListOneTime } from './components/expenseOneTime'
 import { ExpenseListRecurring } from './components/expenseRecurring';
+import { AddExpenseForm } from './components/ExpenseNew.jsx';
 
-function TestExpenses() {
-  const allMyExpenses = [
-    {
-      id: 1,
-      user_id: 101,
-      category_id: 5,
-      amount: 55.75,
-      date: "2024-08-14",
-      description: "Déjeuner au restaurant",
-      receipt_id: "rcpt-abc123"
-    },
-    {
-      id: 2,
-      user_id: 101,
-      category_id: 2,
-      amount: 12.00,
-      date: "2024-08-13",
-      description: "Ticket de bus",
-      receipt_id: null
-    },
-    {
-      id: 3,
-      user_id: 102,
-      category_id: 8,
-      amount: 25.99,
-      date: "2024-08-12",
-      description: "Achat de stylos",
-      receipt_id: "rcpt-xyz789"
-    }
-  ];
-
-  return (
-    <div className="p-8 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Liste de mes Dépenses</h1>
-      <ExpenseListOneTime expenses={allMyExpenses} />
-
-    </div>
-  );
-}
 function TestExpenseList() {
   const fictionalExpenses = [
     {
@@ -123,8 +84,8 @@ function App() {
 
   return (
     <div className="">
-      <TestExpenses />
       <TestExpenseList />
+      <AddExpenseForm/>
     </div>
   )
 }
