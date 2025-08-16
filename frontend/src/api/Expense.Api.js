@@ -31,12 +31,17 @@ export const fetchExpenseById = async (id) => {
 
 export const createNewExpense = async (expenseData) => {
   try {
+    // Log l'objet avant stringify
+    console.log("createNewExpense: Objet à stringifier:", expenseData);
+    // Log la chaîne JSON avant l'envoi
+    console.log("createNewExpense: Chaîne JSON à envoyer:", JSON.stringify(expenseData));
+
     const response = await fetch(`${BACKEND_URL}/api/expenses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(expenseData),
+      body: JSON.stringify(expenseData), // Cette ligne est cruciale
     });
     if (!response.ok) {
       const errorData = await response.json();
@@ -48,6 +53,7 @@ export const createNewExpense = async (expenseData) => {
     throw error;
   }
 };
+
 
 export const updateExistingExpense = async (id, expenseData) => {
   try {
