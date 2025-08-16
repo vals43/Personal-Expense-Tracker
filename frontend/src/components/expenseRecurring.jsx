@@ -1,10 +1,13 @@
+// frontend/src/components/ExpenseListRecurring.jsx
 import React, { useState } from 'react';
-import { Eye, EyeClosed, PencilIcon, Trash, Sun, Moon } from 'lucide-react'; // Importez Sun et Moon
+import { Eye, EyeClosed, PencilIcon, Trash } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react'; // Assurez-vous d'importer Sun et Moon si vous voulez le bouton de thème ici
 
-export function ExpenseListRecurring({ expenses }) {
+export function ExpenseListRecurring({ expenses, onDelete, onEdit, onViewReceipt }) {
   // --- Variable de Thème ---
-  // Utilisez cette variable pour contrôler le thème (true pour sombre, false pour clair)
-  const [isDarkMode, setIsDarkMode] = useState(true); // Initialisé en mode sombre
+  // Vous pouvez initialiser isDarkMode à partir d'un contexte global ou d'un paramètre
+  // Pour cet exemple, on le garde local pour le test du thème dans le composant
+  const [isDarkMode, setIsDarkMode] = useState(true); // true pour thème sombre (gris), false pour clair
 
   if (!expenses || expenses.length === 0) {
     return (
@@ -15,24 +18,22 @@ export function ExpenseListRecurring({ expenses }) {
   }
 
   return (
-    // Conteneur principal: Applique les couleurs de fond et de texte selon le thème
-    <div className={`overflow-x-auto rounded-xl shadow-lg border 
+    <div className={`overflow-x-auto rounded-xl shadow-lg border
       ${isDarkMode ? 'border-gray-700 bg-gray-900 text-gray-100' : 'border-gray-200 bg-white text-gray-900'}`}>
-      {    /* Bouton pour changer de thème 
+
+      {/* Bouton pour changer de thème (optionnel, peut être déplacé plus haut dans l'arborescence) */}
       <div className="flex justify-end p-4">
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`p-2 rounded-full transition-colors duration-200 
+          className={`p-2 rounded-full transition-colors duration-200
             ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
           title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
         >
           {isDarkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-gray-600" />}
         </button>
       </div>
-      */
-      }
+
       <table className={`min-w-full ${isDarkMode ? 'divide-y divide-gray-700' : 'divide-y divide-gray-200'}`}>
-        {/* En-tête du tableau: Fond et texte selon le thème */}
         <thead className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
           <tr>
             <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>ID</th>
@@ -68,6 +69,7 @@ export function ExpenseListRecurring({ expenses }) {
                 <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.receipt_id ? "Oui" : "Non"}</td>
                 <td className="px-4 py-3 flex justify-center items-center gap-2">
                   <button
+                    onClick={() => onEdit && onEdit(expense)} // Passe la dépense complète pour l'édition
                     className={`p-2 text-white rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-150
                       ${isDarkMode ? 'bg-blue-500 focus:ring-offset-gray-900' : 'bg-blue-500 focus:ring-offset-white'}`
                     }
@@ -77,6 +79,7 @@ export function ExpenseListRecurring({ expenses }) {
                   </button>
                   {expense.receipt_id && (
                     <button
+                      onClick={() => onViewReceipt && onViewReceipt(expense.receipt_id)}
                       className={`p-2 text-white rounded-full shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition-all duration-150
                         ${isDarkMode ? 'bg-yellow-500 focus:ring-offset-gray-900' : 'bg-yellow-500 focus:ring-offset-white'}`
                       }
@@ -88,6 +91,7 @@ export function ExpenseListRecurring({ expenses }) {
                     </button>
                   )}
                   <button
+                    onClick={() => onDelete && onDelete(expense.id)} // Passe l'ID pour la suppression
                     className={`p-2 text-white rounded-full shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-150
                       ${isDarkMode ? 'bg-red-500 focus:ring-offset-gray-900' : 'bg-red-500 focus:ring-offset-white'}`
                     }
