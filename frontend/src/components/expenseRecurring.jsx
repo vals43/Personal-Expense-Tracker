@@ -1,14 +1,9 @@
-// frontend/src/components/ExpenseListRecurring.jsx
+
 import React, { useState } from 'react';
 import { Eye, EyeClosed, PencilIcon, Trash } from 'lucide-react';
-import { Sun, Moon } from 'lucide-react'; // Assurez-vous d'importer Sun et Moon si vous voulez le bouton de thème ici
-
+import { Sun, Moon } from 'lucide-react';
 export function ExpenseListRecurring({ expenses, onDelete, onEdit, onViewReceipt }) {
-  // --- Variable de Thème ---
-  // Vous pouvez initialiser isDarkMode à partir d'un contexte global ou d'un paramètre
-  // Pour cet exemple, on le garde local pour le test du thème dans le composant
-  const [isDarkMode, setIsDarkMode] = useState(true); // true pour thème sombre (gris), false pour clair
-
+  const [isDarkMode, setIsDarkMode] = useState(true);
   if (!expenses || expenses.length === 0) {
     return (
       <div className={`text-center py-6 text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-medium`}>
@@ -59,7 +54,11 @@ export function ExpenseListRecurring({ expenses, onDelete, onEdit, onViewReceipt
                 {expense.type === "Récurrente" ?
                   <td className={`px-4 py-3 text-sm font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{expense.type}</td>
                   :
-                  <td className={`px-4 py-3 text-sm font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.type || "Unique"}</td>
+                  <td className={`px-4 py-3 text-sm font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(expense.status)}`}>
+                      {expense.type || 'Unique'}
+                    </span>
+                  }</td>
                 }
                 <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.category_id}</td>
                 <td className={`px-4 py-3 text-lg font-bold ${isDarkMode ? 'text-red-400' : 'text-red-700'}`}>{expense.amount}€</td>

@@ -80,11 +80,21 @@ export const deleteExistingExpense = async (id) => {
     const response = await fetch(`${BACKEND_URL}/api/expenses/${id}`, {
       method: 'DELETE',
     });
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Erreur lors de la suppression de la dépense ${id}: ${response.status}`);
+      let errorMessage = `Erreur lors de la suppression de la dépense ${id}: ${response.status}`;
+      try {
+        // on essaie de parser si y’a du contenu
+        const errorData = await response.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch (e) {
+        // pas grave, la réponse était vide
+      }
+      throw new Error(errorMessage);
     }
-    return { success: true, message: `Dépense ${id} supprimée` };
+
+    // Pas de JSON si 204
+    return true;
   } catch (error) {
     console.error("Erreur API - deleteExistingExpense:", error);
     throw error;

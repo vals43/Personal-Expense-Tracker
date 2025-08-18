@@ -41,20 +41,19 @@ export default function ExpensesPage() {
     }
   };
 
-  // Gère la suppression d'une dépense
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette dépense ?")) { // Utilisez une modale personnalisée au lieu de window.confirm
-      try {
-        await deleteExistingExpense(id);
-        setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== id)); // Supprime de la liste locale
-        // Optionnel: Afficher un message de succès
-        console.log(`Dépense ${id} supprimée avec succès.`);
-      } catch (err) {
-        setError(err.message);
-        console.error('Erreur lors de la suppression de la dépense:', err);
-      }
+    try {
+      await deleteExistingExpense(id);
+  
+      setExpenses((prev) => prev.filter((exp) => exp.id !== id));
+  
+      alert("✅ Dépense supprimée avec succès !");
+    } catch (error) {
+      console.error("Erreur suppression:", error);
+      alert("❌ Impossible de supprimer la dépense !");
     }
   };
+  
 
   // Gère l'édition d'une dépense (met en place la dépense pour le formulaire d'édition)
   const handleEdit = (expense) => {
