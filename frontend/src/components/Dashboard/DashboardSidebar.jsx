@@ -80,15 +80,15 @@ const quickActions = [
 ];
 
 const DashboardChart = ({
-    userName = 'Marcos',
+    userName = 'Me',
     totalBalance = 550.2,
     requestedAmount = 467.86,
     unrequestedAmount = 82.34,
 }) => {
     return (
-        <div className="p-6 mr-6 max-w-3xs mx-auto">
+        <div className="p-6 mr-6 max-w-3xs sticky top-0 mx-auto">
             {/* Header Section */}
-            <header className="mb-10">
+            <header className="mb-5">
                 <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
                     Hello {userName},
                 </h1>
@@ -98,7 +98,19 @@ const DashboardChart = ({
             </header>
 
             {/* Main Content */}
+            <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Requested
+                </p>
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                    {requestedAmount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'EUR',
+                    })}
+                </p>
+            </div>
             <div className="flex flex-col lg:flex-row gap-8">
+
                 {/* Chart Section */}
                 <section className="lg:w-1/2 flex items-center justify-center">
                     <div className="overflow-visible">
@@ -109,18 +121,8 @@ const DashboardChart = ({
                 {/* Metrics and Actions Section */}
                 <section className="lg:w-1/2 flex flex-col justify-center">
                     <div className="space-y-4 mb-6">
-                        <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                Requested
-                            </p>
-                            <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                                {requestedAmount.toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                })}
-                            </p>
-                        </div>
-                        <div>
+
+                        <div className='mt-28 '>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                                 Unrequested
                             </p>

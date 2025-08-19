@@ -21,17 +21,17 @@ const DoughnutChart = ({
       dashOffset
     };
   });
-  return <div className="relative w-full aspect-square">
-      <svg viewBox="5 10 20 30" className="w-full overflow-visible h-full">
+  return <div className="relative w-full aspect-square scale-125">
+      <svg viewBox="0 10 10 30" className="w-full overflow-visible h-full">
         {/* Background circle */}
-        <circle cx="18" cy="18" r={radius} fill="none" stroke="#f3f4f6" strokeWidth="3" />
+        <circle cx="18" cy="18" r={radius} fill="none" stroke="#f3f4f6" strokeWidth="4" />
         {/* Data segments */}
-        {segments.map((segment, index) => <circle key={index} cx="18" cy="18" r={radius} fill="none" stroke={segment.color} strokeWidth="3" strokeDasharray={`${segment.dashArray} ${circumference - segment.dashArray}`} strokeDashoffset={segment.dashOffset} transform="rotate(-90 18 18)" strokeLinecap="round" />)}
+        {segments.map((segment, index) => <circle key={index} cx="18" cy="18" r={radius} fill="none" stroke={segment.color} strokeWidth="4" strokeDasharray={`${segment.dashArray} ${circumference - segment.dashArray}`} strokeDashoffset={segment.dashOffset} transform="rotate(-90 18 18)" strokeLinecap="round" />)}
         {/* Center text */}
         <text x="18" y="16" textAnchor="middle" fontSize="0.25rem" fill="#9ca3af">
           Total
         </text>
-        <text x="18" y="20" textAnchor="middle" fontSize="0.35rem" fontWeight="bold">
+        <text x="18" y="22" textAnchor="middle" fontSize="0.35rem" fontWeight="bold">
           {total}€
         </text>
       </svg>

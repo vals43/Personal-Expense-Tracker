@@ -31,9 +31,7 @@ export const fetchExpenseById = async (id) => {
 
 export const createNewExpense = async (expenseData) => {
   try {
-    // Log l'objet avant stringify
     console.log("createNewExpense: Objet à stringifier:", expenseData);
-    // Log la chaîne JSON avant l'envoi
     console.log("createNewExpense: Chaîne JSON à envoyer:", JSON.stringify(expenseData));
 
     const response = await fetch(`${BACKEND_URL}/api/expenses`, {

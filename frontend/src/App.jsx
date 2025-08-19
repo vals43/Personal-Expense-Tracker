@@ -10,7 +10,7 @@ function App() {
       <div className="bg-gray-700 text-gray-100 flex">
         <Sidebar /> 
 
-        <div className="flex-1">
+        <div className="flex-1 overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/expenses" element={<ExpensesPage />} />
