@@ -1,11 +1,23 @@
 import React from 'react';
-import ExpensesPage from './page/ExpensePage'; './page/ExpensePage.jsx'; 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Dashboard from './page/Dashboard';
+import ExpensesPage from './page/ExpensePage';
+import Sidebar from './components/Sidebar';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100"> 
-          <ExpensesPage />
-    </div>
+    <Router>
+      <div className="bg-gray-700 text-gray-100 flex">
+        <Sidebar /> 
+
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 

@@ -1,39 +1,32 @@
-import Sidebar from '../components/Sidebar';
-import BudgetsSection from '../components/Dashboard/BudgetsSection';
+import React from 'react';
+import DashboardChart from '../components/Dashboard/DashboardSidebar';
+import BudgetCard from '../components/Dashboard/BudgetCard';
 import ExpensesSection from '../components/Dashboard/ExpensesSection';
 
-const Dashboard = () => {
-  // Mock data for budgets
+function Dashboard() {
   const budgets = [
-    { id: 1, name: 'February Expenses', total: 300, spent: 87.5, remaining: 212.5, date: '01/02/19' },
-    { id: 2, name: 'Berlin Congress', total: 850, spent: 297.5, remaining: 552.5, date: '01/02/19' },
-    { id: 3, name: 'Inditex Meeting', total: 400, spent: 187.5, remaining: 212.5, date: '01/02/19' }
-  ];
-
-  // Mock data for expenses
-  const expenses = [
-    { id: 1, company: 'Ryanair', budget: 'Berlin Congress', date: '01/02/19', amount: 126.3, status: 'Approved' },
-    { id: 2, company: 'NH hotels', budget: 'Berlin Congress', date: '01/02/19', amount: 210.0, status: 'Approved' },
-    { id: 3, company: 'Equinox Rest.', budget: 'Berlin Congress', date: '03/02/19', amount: 32.54, status: 'Approved' },
-    { id: 4, company: "Grandma's kitchen", budget: 'Berlin Congress', date: '03/02/19', amount: 14.2, status: 'Approved' },
-    { id: 5, company: 'Presents store', budget: 'Berlin Congress', date: '03/02/19', amount: 22.4, status: 'Approved' },
-    { id: 6, company: 'Car stars', budget: 'Berlin Congress', date: '03/02/19', amount: 5.1, status: 'Pending' },
-    { id: 7, company: 'Paper supplies', budget: 'February Expenses', date: '04/02/19', amount: 6.12, status: 'Pending' },
-    { id: 8, company: 'Galleta Rest.', budget: 'February Expenses', date: '04/02/19', amount: 42.6, status: 'Pending' },
-    { id: 9, company: 'Pakstore', budget: 'February Expenses', date: '04/02/19', amount: 15.0, status: 'Pending' }
+    { name: 'Food', total: 500, spent: 300, remaining: 200, date: '12 Nov - 18 Nov' },
+    { name: 'Shopping', total: 250, spent: 150, remaining: 100, date: '15 Nov - 22 Nov' },
+    { name: 'Transport', total: 100, spent: 80, remaining: 20, date: '10 Nov - 17 Nov' },
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 p-8">
-        <div className="w-2/3">
-          <BudgetsSection budgets={budgets} />
-          <ExpensesSection expenses={expenses} />
+    <div className="flex space-y-8 p-8">
+      <div className="sticky top-0">
+        <DashboardChart />
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white"></h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {budgets.map((budget, index) => (
+            <BudgetCard key={index} {...budget} />
+          ))}
         </div>
+        <ExpensesSection/>
       </div>
     </div>
   );
-};
+}
 
 export default Dashboard;
