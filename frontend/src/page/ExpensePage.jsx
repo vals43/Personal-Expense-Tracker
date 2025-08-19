@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ExpenseListRecurring } from '../components/expenseRecurring';
-import { AddExpenseForm } from '../components/AddExpenseForm.jsx';
+import { ExpenseListRecurring } from '../components/Expense/expenseRecurring.jsx';
+import { AddExpenseForm } from '../components/Expense/AddExpenseForm.jsx';
 import {
   fetchAllExpenses,
   createNewExpense,
@@ -55,20 +55,17 @@ export default function ExpensesPage() {
   };
   
 
-  // Gère l'édition d'une dépense (met en place la dépense pour le formulaire d'édition)
   const handleEdit = (expense) => {
-    setEditingExpense(expense); // Charge la dépense à éditer dans le formulaire
-    // Vous devriez rendre un formulaire d'édition conditionnellement ici ou ouvrir une modale
+    setEditingExpense(expense); 
   };
 
-  // Gère la mise à jour effective d'une dépense après édition
   const handleUpdateExpense = async (id, updatedData) => {
     try {
       const updatedExpense = await updateExistingExpense(id, updatedData);
       setExpenses((prevExpenses) =>
         prevExpenses.map((exp) => (exp.id === id ? updatedExpense : exp))
-      ); // Met à jour la liste locale
-      setEditingExpense(null); // Réinitialise l'état d'édition
+      ); 
+      setEditingExpense(null);
       console.log('Dépense mise à jour avec succès:', updatedExpense);
     } catch (err) {
       setError(err.message);
@@ -76,7 +73,6 @@ export default function ExpensesPage() {
     }
   };
 
-  // Gère la visualisation du reçu (simple log pour l'instant)
   const handleViewReceipt = (receiptId) => {
     console.log("Voir le reçu:", receiptId);
     // Ici, vous implémenteriez la logique pour afficher le reçu (ouvrir dans un nouvel onglet, modale, etc.)
