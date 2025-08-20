@@ -26,7 +26,7 @@ const DoughnutChart = ({
         {/* Background circle */}
         <circle cx="18" cy="18" r={radius} fill="none" stroke="#f3f4f6" strokeWidth="4" />
         {/* Data segments */}
-        {segments.map((segment, index) => <circle key={index} cx="18" cy="18" r={radius} fill="none" stroke={segment.color} strokeWidth="4" strokeDasharray={`${segment.dashArray} ${circumference - segment.dashArray}`} strokeDashoffset={segment.dashOffset} transform="rotate(-90 18 18)" strokeLinecap="round" />)}
+        {segments.map((segment, index) => <circle key={index} cx="18" cy="18" r={radius} fill="none" stroke={segment.color} strokeWidth="4" strokeDasharray={`${segment.dashArray} ${circumference - segment.dashArray}`} strokeDashoffset={segment.dashOffset} transform="rotate(-90 18 18)" />)}
         {/* Center text */}
         <text x="18" y="16" textAnchor="middle" fontSize="0.25rem" fill="#9ca3af">
           Total

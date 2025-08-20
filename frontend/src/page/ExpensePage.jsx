@@ -7,6 +7,7 @@ import {
   updateExistingExpense,
   deleteExistingExpense,
 } from '../api/Expense.Api.js';
+import ExpenseHeader from '../components/Expense/ExpenseHeader.jsx';
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState([]);
@@ -44,19 +45,19 @@ export default function ExpensesPage() {
   const handleDelete = async (id) => {
     try {
       await deleteExistingExpense(id);
-  
+
       setExpenses((prev) => prev.filter((exp) => exp.id !== id));
-  
+
       alert("✅ Dépense supprimée avec succès !");
     } catch (error) {
       console.error("Erreur suppression:", error);
       alert("❌ Impossible de supprimer la dépense !");
     }
   };
-  
+
 
   const handleEdit = (expense) => {
-    setEditingExpense(expense); 
+    setEditingExpense(expense);
   };
 
   const handleUpdateExpense = async (id, updatedData) => {
@@ -64,7 +65,7 @@ export default function ExpensesPage() {
       const updatedExpense = await updateExistingExpense(id, updatedData);
       setExpenses((prevExpenses) =>
         prevExpenses.map((exp) => (exp.id === id ? updatedExpense : exp))
-      ); 
+      );
       setEditingExpense(null);
       console.log('Dépense mise à jour avec succès:', updatedExpense);
     } catch (err) {
@@ -79,7 +80,6 @@ export default function ExpensesPage() {
     alert(`Affichage du reçu avec l'ID: ${receiptId}`); // Utilisez une modale personnalisée au lieu d'alert()
   };
 
-  // Charge les dépenses au montage du composant
   useEffect(() => {
     loadExpenses();
   }, []);
@@ -102,9 +102,7 @@ export default function ExpensesPage() {
 
   return (
     <div className="p-8 bg-gray-950 min-h-screen text-gray-100">
-      <h1 className="text-4xl font-bold text-center mb-10 text-blue-400">Gestionnaire de Dépenses</h1>
-
-      {/* Section pour ajouter ou éditer une dépense */}
+      <ExpenseHeader/>
       <div className="mb-10">
         <AddExpenseForm
           onSubmit={handleAddExpense}

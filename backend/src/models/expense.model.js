@@ -63,7 +63,13 @@ export const getExpensesFiltered = async (filters) => {
     if (conditions.length > 0) {
         query += " WHERE " + conditions.join(" AND ");
     }
-    query += " ORDER BY date DESC";
+    query += " ORDER BY id DESC";
+
+    // Ajout de la clause LIMIT si un 'limit' est spécifié
+    if (filters.limit) {
+        values.push(filters.limit);
+        query += ` LIMIT $${idx++}`;
+    }
 
     const { rows } = await pool.query(query, values);
     return rows;
@@ -111,41 +117,59 @@ export const createExpense = async ({
     return rows[0];
 };
 
-export const updateExpense = async ({
-    id,
-    category_id,
-    amount,
-    date,
-    description,
-    type,
-    receipt_id,
-    start_date,
-    end_date
-}) => {
-    const fields = [];
-    const values = [];
-    let index = 1;
+// Dans votre contrôleur côté serveur (ex: expenseController.js)
 
-    if (category_id !== undefined) { fields.push(`category_id=$${index++}`); values.push(category_id); }
-    if (amount !== undefined) { fields.push(`amount=$${index++}`); values.push(amount); }
-    if (date !== undefined) { fields.push(`date=$${index++}`); values.push(date); }
-    if (description !== undefined) { fields.push(`description=$${index++}`); values.push(description); }
-    if (type !== undefined) { fields.push(`type=$${index++}`); values.push(type); }
-    if (receipt_id !== undefined) { fields.push(`receipt_id=$${index++}`); values.push(receipt_id); }
-    if (start_date !== undefined) { fields.push(`start_date=$${index++}`); values.push(start_date); }
-    if (end_date !== undefined) { fields.push(`end_date=$${index++}`); values.push(end_date); }
+export const updateExpense = async (req, res) => {
+    // ➡️ Ajout du bloc try...catch
+    try {
+        const {
+            id,
+            category_id,
+            amount,
+            date,
+            description,
+            type,
+            receipt_id,
+            start_date,
+            end_date
+        } = req.body; // 🚨 Assurez-vous d'utiliser req.body pour les données
 
-    if (fields.length === 0) throw new Error("No fields to update");
+        const fields = [];
+        const values = [];
+        let index = 1;
 
-    const query = `
-        UPDATE expenses SET ${fields.join(", ")}
-        WHERE id=$${index}
-        RETURNING *;
-    `;
-    values.push(id);
+        if (category_id !== undefined) { fields.push(`category_id=$${index++}`); values.push(category_id); }
+        if (amount !== undefined) { fields.push(`amount=$${index++}`); values.push(amount); }
+        if (date !== undefined) { fields.push(`date=$${index++}`); values.push(date); }
+        if (description !== undefined) { fields.push(`description=$${index++}`); values.push(description); }
+        if (type !== undefined) { fields.push(`type=$${index++}`); values.push(type); }
+        if (receipt_id !== undefined) { fields.push(`receipt_id=$${index++}`); values.push(receipt_id); }
+        if (start_date !== undefined) { fields.push(`start_date=$${index++}`); values.push(start_date); }
+        if (end_date !== undefined) { fields.push(`end_date=$${index++}`); values.push(end_date); }
 
-    const { rows } = await pool.query(query, values);
-    return rows[0];
+        if (fields.length === 0) {
+            return res.status(400).json({ error: "No fields to update" });
+        }
+
+        const query = `
+            UPDATE expenses SET ${fields.join(", ")}
+            WHERE id=$${index}
+            RETURNING *;
+        `;
+        values.push(id);
+
+        const { rows } = await pool.query(query, values);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Expense not found" });
+        }
+
+        res.json(rows[0]); // Succès : renvoyer le résultat
+    } catch (err) {
+        // ➡️ En cas d'erreur, renvoyer une réponse JSON
+        console.error("Erreur de mise à jour de la dépense:", err);
+        res.status(500).json({ error: "Erreur serveur lors de la mise à jour." });
+    }
 };
 
 export const deleteExpense = async (id) => {

@@ -1,9 +1,11 @@
 import {getExpensesFiltered,getExpenseById,createExpense,updateExpense,deleteExpense} from "../models/expense.model.js";
-
 export const getExpenses = async (req, res) => {
     try {
-        const { month, day, type, category_id, amount_min, amount_max, start_date, end_date } = req.query;
-        const filters = { month, day, type, category_id, amount_min, amount_max, start_date, end_date };
+        const { month, day, type, category_id, amount_min, amount_max, start_date, end_date , limit} = req.query;
+        const filters = { month, day, type, category_id, amount_min, amount_max, start_date, end_date , limit: limit ? parseInt(limit, 10) : undefined,};
+
+        // ➡️ Ajoutez cette ligne ici
+        console.log("Filtres reçus par le contrôleur:", filters);
 
         const expenses = await getExpensesFiltered(filters);
         if (!expenses.length) return res.status(404).json({ error: "Not found" });
@@ -13,7 +15,6 @@ export const getExpenses = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-
 
 
 

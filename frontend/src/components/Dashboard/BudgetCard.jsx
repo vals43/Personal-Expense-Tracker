@@ -1,8 +1,9 @@
 import React from 'react';
 import { MoreVerticalIcon } from 'lucide-react';
 
-const BudgetCard = ({ name, total, spent, remaining, date }) => {
-  const percentage = Math.round((spent / total) * 100);
+const BudgetCard = ({ name, spent, remaining, date }) => {
+  const total = spent + remaining;
+  const percentage = Math.round((spent / total) * 100)+3;
 
   return (
     <div className="bg-gray-800  w-max text-gray-200 rounded-xl shadow-lg p-2">
@@ -23,15 +24,15 @@ const BudgetCard = ({ name, total, spent, remaining, date }) => {
               r="17"
               fill="none"
               stroke="blue"
-              strokeWidth="1.8"
+              strokeWidth="2"
             />
             <circle
               cx="18" 
               cy="18"
               r="17"
               fill="none"
-              stroke="#D4A50D"
-              strokeWidth="1.8"
+              stroke={percentage <80 ? "#D4A50D": "red"}
+              strokeWidth="2"
               strokeDasharray={`${percentage} 100`}
               strokeLinecap="round"
               transform="rotate(-90 18 18)"
@@ -47,11 +48,11 @@ const BudgetCard = ({ name, total, spent, remaining, date }) => {
       <div className="space-y-1">
         <div className="flex flex-col items-end text-sm">
           <span className="text-gray-400">Spent</span>
-          <span className="font-medium text-blue-400">{spent}€</span>
+          <span className="font-medium text-amber-400">{spent}€</span>
         </div>
         <div className="flex flex-col items-end text-sm">
           <span className="text-gray-400">Remaining</span>
-          <span className="font-medium text-amber-400">{remaining}€</span>
+          <span className="font-medium text-blue-400">{remaining}€</span>
         </div>
         <div className="text-right text-xs text-gray-500 pt-2">{date}</div>
       </div>

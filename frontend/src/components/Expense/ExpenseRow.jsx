@@ -9,7 +9,7 @@ export function ExpenseRow({ expense, onDelete, onEdit, onViewReceipt, isDarkMod
   return (
     <tr key={expense.id} className={`${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors duration-200`}>
       <td className={`px-4 py-3 text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{expense.id}</td>
-      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.date}</td>
+      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.date.split("T")[0]}</td>
       {expense.type === "Récurrente" ?
         <td className={`px-4 py-3 text-sm font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{expense.type}</td>
         :
@@ -18,8 +18,8 @@ export function ExpenseRow({ expense, onDelete, onEdit, onViewReceipt, isDarkMod
       <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.category_id}</td>
       <td className={`px-4 py-3 text-lg font-bold ${isDarkMode ? 'text-red-400' : 'text-red-700'}`}>{expense.amount}€</td>
       <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.description || "N/A"}</td>
-      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.start_date || "N/A"}</td>
-      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.end_date || "N/A"}</td>
+      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.start_date ? expense.start_date.split("T")[0] : "N/A"}</td>
+      <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.start_date ? expense.start_date.split("T")[0] : "N/A"}</td>
       <td className={`px-4 py-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{expense.receipt_id ? "Oui" : "Non"}</td>
       <td className="px-4 py-3 flex justify-center items-center gap-2">
         <button

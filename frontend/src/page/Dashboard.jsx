@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardChart from '../components/Dashboard/DashboardSidebar';
 import BudgetCard from '../components/Dashboard/BudgetCard';
-import ExpenseTable from '../components/Dashboard/DashboardList.jsx';
+import ExpensesSection from './../components/Dashboard/ExpensesSection';
 import {
   fetchAllExpenses,
 } from '../api/Expense.Api.js';
@@ -13,16 +13,16 @@ function Dashboard() {
   const [error, setError] = useState(null);
 
   const budgets = [
-    { name: 'Food', total: 500, spent: 300, remaining: 200, date: '12 Nov - 18 Nov' },
-    { name: 'Shopping', total: 250, spent: 150, remaining: 100, date: '15 Nov - 22 Nov' },
-    { name: 'Transport', total: 100, spent: 80, remaining: 20, date: '10 Nov - 17 Nov' },
+    { name: 'Food', spent: 400, remaining: 200, date: '12 Nov - 18 Nov' },
+    { name: 'Shopping', spent: 150, remaining: 100, date: '15 Nov - 22 Nov' },
+    { name: 'Transport', spent: 80, remaining: 20, date: '10 Nov - 17 Nov' },
   ];
 
   const loadExpenses = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAllExpenses();
+      const data = await fetchAllExpenses({ limit: 5 });
       setExpenses(data);
     } catch (err) {
       setError(err.message);
@@ -64,7 +64,7 @@ function Dashboard() {
             <BudgetCard key={index} {...budget} />
           ))}
         </div>
-        <ExpenseTable expenses={expenses} />
+        <ExpensesSection expenses={expenses} />
       </div>
     </div>
   );
