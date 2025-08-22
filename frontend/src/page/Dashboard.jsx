@@ -5,7 +5,8 @@ import ExpensesSection from './../components/Dashboard/ExpensesSection';
 import {
   fetchAllExpenses,
 } from '../api/Expense.Api.js';
-
+import { TransactionCard } from '../components/card/TransactionCard.jsx';
+import { CreditCardIcon, icons } from 'lucide-react';
 
 function Dashboard() {
   const [expenses, setExpenses] = useState([]);
@@ -51,6 +52,18 @@ function Dashboard() {
     );
   }
 
+  
+
+  const transactions = expenses.map(expense => ({
+    id: expense.id,
+    title: expense.description,
+    subtitle: expense.category_id, 
+    icon: <CreditCardIcon size={20} />,
+    date: expense.date,
+    isIncome: false,
+    amount: expense.amount
+  }));
+
   return (
     <div className="flex space-y-8 p-8">
       <div className="sticky top-0">
@@ -65,6 +78,9 @@ function Dashboard() {
           ))}
         </div>
         <ExpensesSection expenses={expenses} />
+        <div className="col-span-12 md:col-span-6">
+          <TransactionCard transactions={transactions} />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge, BadgeIndicator } from '../ui/Badge.jsx';
 
 const ExpenseTable = ({ expenses }) => {
   if (!expenses || expenses.length === 0) {
@@ -52,10 +51,6 @@ const ExpenseTable = ({ expenses }) => {
                   {expense.amount} $
                 </td>
                 <td className="py-4 px-6">
-                  <Badge variant={expense.type}>
-                    <BadgeIndicator variant={expense.type} className="mr-2" />
-                    <span className="capitalize">{expense.type}</span>
-                  </Badge>
                 </td>
               </tr>
             ))}

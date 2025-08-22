@@ -1,37 +1,44 @@
-import React from 'react';
+$
+import { cn } from "@/lib/utils"
 
-function Badge({ className = '', variant = "default", ...props }) {
-  const baseClasses = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium";
-  const variantClasses = {
-    "one-time": "bg-blue-50 text-blue-700", // Changed from "approved"
-    "recurring": "bg-orange-50 text-orange-700",
-  };
+interface BadgeProps extends React.ComponentProps<"span"> {
+  variant?: "approved" | "pending" | "default"
+}
 
-  const classes = `${baseClasses} ${variantClasses[variant] || variantClasses.default} ${className}`.trim();
-
+function Badge({ className, variant = "default", ...props }: BadgeProps) {
   return (
     <span
-      className={classes}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+        {
+          "bg-blue-50 text-blue-700": variant === "approved",
+          "bg-orange-50 text-orange-700": variant === "pending",
+          "bg-gray-100 text-gray-800": variant === "default",
+        },
+        className,
+      )}
       {...props}
     />
-  );
+  )
 }
 
-function BadgeIndicator({ className = '', variant = "default" }) {
-  const baseClasses = "h-2 w-2 rounded-full";
-  const variantClasses = {
-    "one-time": "bg-blue-500", 
-    "recurring": "bg-orange-500",
-    default: "bg-gray-500"
-  };
-
-  const classes = `${baseClasses} ${variantClasses[variant] || variantClasses.default} ${className}`.trim();
-
+function BadgeIndicator({
+  className,
+  variant = "default",
+}: { className?: string; variant?: "approved" | "pending" | "default" }) {
   return (
     <span
-      className={classes}
+      className={cn(
+        "h-2 w-2 rounded-full",
+        {
+          "bg-blue-500": variant === "approved",
+          "bg-orange-500": variant === "pending",
+          "bg-gray-500": variant === "default",
+        },
+        className,
+      )}
     />
-  );
+  )
 }
 
-export { Badge, BadgeIndicator };
+export { Badge, BadgeIndicator }
