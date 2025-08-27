@@ -1,0 +1,10 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "unknown", 
+    "database": "expense_tracker", 
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
+
