@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Button from "../ui/Button"
-import {
-  PlusIcon,
-  CalendarIcon,
-  DollarSignIcon,
-  FileTextIcon,
-  XIcon,
-  UploadIcon,
-  RepeatIcon,
-} from "lucide-react"
+import { CalendarIcon, DollarSignIcon, FileTextIcon, XIcon, UploadIcon, RepeatIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useExpenseActions } from "../../api/expenses/expenseContext"
 import CategoryDropdown from "../category/categoryDropdown"
@@ -185,7 +177,7 @@ const ExpenseForm = ({ initialData = null, onClose, isOpen }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50 p-4"
         onClick={handleCloseClick}
       >
         <motion.div
@@ -194,196 +186,238 @@ const ExpenseForm = ({ initialData = null, onClose, isOpen }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative w-full max-w-4xl bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border border-gray-200 dark:border-gray-700"
+          className="relative w-full max-w-md sm:max-w-lg bg-white dark:bg-gray-900 shadow-2xl rounded-xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* bouton X */}
           <button
             onClick={handleCloseClick}
-            className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:hover:text-gray-200 transition"
+            className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:hover:text-gray-200 transition-colors"
           >
-            <XIcon className="w-5 h-5" />
+            <XIcon className="w-4 h-4" />
           </button>
 
-          {/* contenu */}
-          <div className="p-6">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-xl m-auto font-bold text-gray-900 dark:text-white">
-                {initialData ? "Update Expense" : "Add New Expense"}
-              </h2>
-            </div>
-            <p className="text-sm flex justify-around text-gray-600 dark:text-gray-400 mb-6">
-              Track your spending with style
-            </p>
+          <div className="p-6 pb-4 border-b border-gray-100 dark:border-gray-800">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {initialData ? "Update Expense" : "Add Expense"}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Track your spending efficiently</p>
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {submissionError && (
-                <p className="text-sm text-red-500">{submissionError}</p>
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">{submissionError}</p>
+                </div>
               )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Amount */}
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-1">Amount *</label>
-                  <div className="relative">
-                    <DollarSignIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="number"
-                      name="amount"
-                      placeholder="0.00"
-                      value={formData.amount}
-                      onChange={handleChange}
-                      min="0.01"
-                      step="0.01"
-                      required
-                      className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                        errors.amount ? "border-red-500" : ""
-                      }`}
-                    />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount *</label>
+                    <div className="relative">
+                      <DollarSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        name="amount"
+                        placeholder="0.00"
+                        value={formData.amount}
+                        onChange={handleChange}
+                        min="0.01"
+                        step="0.01"
+                        required
+                        className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.amount
+                            ? "border-red-300 bg-red-50 dark:bg-red-900/10"
+                            : "border-gray-300 dark:border-gray-600"
+                        } dark:bg-gray-800 dark:text-white`}
+                      />
+                    </div>
+                    {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount}</p>}
                   </div>
-                  {errors.amount && <p className="text-xs text-red-500">{errors.amount}</p>}
-                </div>
 
-                {/* Type */}
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-1">Type</label>
-                  <div className="relative">
-                    <RepeatIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <select
-                      name="type"
-                      value={formData.type}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
-                    >
-                      <option value="one-time">One-time</option>
-                      <option value="recurring">Recurring</option>
-                    </select>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+                    <div className="relative">
+                      <RepeatIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <select
+                        name="type"
+                        value={formData.type}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-8 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white dark:bg-gray-800 dark:text-white transition-colors"
+                      >
+                        <option value="one-time">One-time</option>
+                        <option value="recurring">Recurring</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {formData.type === "one-time" && (
-                  <div className="lg:col-span-2 relative">
-                    <label className="block text-sm font-semibold mb-1">Date *</label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date *</label>
                     <div className="relative">
-                      <CalendarIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                      <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="datetime-local"
                         name="date"
                         value={formData.date}
                         onChange={handleChange}
                         required
-                        className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                          errors.date ? "border-red-500" : ""
-                        }`}
+                        className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.date
+                            ? "border-red-300 bg-red-50 dark:bg-red-900/10"
+                            : "border-gray-300 dark:border-gray-600"
+                        } dark:bg-gray-800 dark:text-white`}
                       />
                     </div>
-                    {errors.date && <p className="text-xs text-red-500">{errors.date}</p>}
+                    {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
                   </div>
                 )}
 
-                {/* Category - Full width */}
-                <div className="lg:col-span-2">
+                <div>
                   <CategoryDropdown value={formData.categoryId} onChange={(e) => handleChange(e)} errors={errors} />
                 </div>
 
-                {/* Description */}
-                <div className="lg:col-span-2 relative">
-                  <label className="block text-sm font-semibold mb-1">
-                    Description <span className="text-gray-400 font-normal">(Optional)</span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description <span className="text-gray-400 font-normal text-xs">(Optional)</span>
                   </label>
                   <div className="relative">
-                    <FileTextIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <FileTextIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="text"
                       name="description"
-                      placeholder="Add a description"
+                      placeholder="Add a description..."
                       value={formData.description}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white transition-colors"
                     />
                   </div>
                 </div>
               </div>
 
               {formData.type === "recurring" && (
-                <div className="space-y-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                  <div className="flex items-center gap-2">
-                    <RepeatIcon className="h-5 w-5 text-indigo-500" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recurring Schedule</h3>
+                <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-2 mb-3">
+                    <RepeatIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">Recurring Schedule</h3>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Start Date */}
-                    <div className="relative">
-                      <label className="block text-sm font-semibold mb-1">Start Date *</label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        When this expense should begin appearing in dashboards
-                      </p>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Start Date *
+                      </label>
                       <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="datetime-local"
                           name="startDate"
                           value={formData.startDate}
                           onChange={handleChange}
-                          className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            errors.startDate ? "border-red-500" : ""
-                          }`}
+                          className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            errors.startDate
+                              ? "border-red-300 bg-red-50 dark:bg-red-900/10"
+                              : "border-gray-300 dark:border-gray-600"
+                          } dark:bg-gray-800 dark:text-white`}
                         />
                       </div>
-                      {errors.startDate && <p className="text-xs text-red-500">{errors.startDate}</p>}
+                      {errors.startDate && <p className="text-xs text-red-500 mt-1">{errors.startDate}</p>}
                     </div>
 
-                    {/* End Date */}
-                    <div className="relative">
-                      <label className="block text-sm font-semibold mb-1">
-                        End Date <span className="text-gray-400 font-normal">(Optional)</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        End Date <span className="text-gray-400 font-normal text-xs">(Optional)</span>
                       </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Leave empty for ongoing expenses</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Leave empty for ongoing expenses</p>
                       <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="datetime-local"
                           name="endDate"
                           value={formData.endDate}
                           onChange={handleChange}
-                          className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            errors.endDate ? "border-red-500" : ""
-                          }`}
+                          className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            errors.endDate
+                              ? "border-red-300 bg-red-50 dark:bg-red-900/10"
+                              : "border-gray-300 dark:border-gray-600"
+                          } dark:bg-gray-800 dark:text-white`}
                         />
                       </div>
-                      {errors.endDate && <p className="text-xs text-red-500">{errors.endDate}</p>}
+                      {errors.endDate && <p className="text-xs text-red-500 mt-1">{errors.endDate}</p>}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Receipt - Full width */}
-              <div className="relative">
-                <label className="block text-sm font-semibold mb-1">
-                  Receipt <span className="text-gray-400 font-normal">(Optional)</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Receipt <span className="text-gray-400 font-normal text-xs">(Optional)</span>
                 </label>
                 <div className="relative">
-                  <UploadIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <UploadIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="file"
                     accept="image/*,.pdf"
                     onChange={handleFileChange}
-                    className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/20 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-500/30 file:backdrop-blur-sm"
+                    className="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white transition-colors file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900/20 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/30"
                   />
                 </div>
                 {formData.receipt && (
-                  <p className="text-xs text-green-500 mt-1">New receipt uploaded successfully</p>
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-2 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    New receipt uploaded
+                  </p>
                 )}
                 {formData.existingReceipt && !formData.receipt && (
-                  <p className="text-xs text-blue-500 mt-1">Existing receipt will be retained</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">Existing receipt will be retained</p>
                 )}
               </div>
 
-              {/* Submit */}
-              <Button type="submit" disabled={isLoading} className="w-full mt-4">
-                {isLoading ? "Processing..." : initialData ? "Update Expense" : "Add Expense"}
-              </Button>
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 100-16 8 8 0 000 16h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : initialData ? (
+                    "Update Expense"
+                  ) : (
+                    "Add Expense"
+                  )}
+                </Button>
+              </div>
             </form>
           </div>
         </motion.div>

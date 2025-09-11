@@ -13,8 +13,7 @@ import { CategoryManager } from './pages/category-manager';
 
 export function AppRouter() {
   return (
-    <Routes> {/* ← Seulement Routes ici, pas de BrowserRouter */}
-      {/* Routes publiques */}
+    <Routes> 
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 

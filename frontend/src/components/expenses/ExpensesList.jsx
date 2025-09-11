@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -12,6 +10,7 @@ import {
   FileTextIcon,
   XIcon,
   SearchIcon,
+  DollarSignIcon,
 } from "lucide-react"
 import Button from "../ui/Button"
 import { useExpenses, useExpenseActions } from "../../api/expenses/expenseContext"
@@ -58,6 +57,8 @@ const ExpenseList = ({ onEditExpense }) => {
   const [isDeleting, setIsDeleting] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterCategory, setFilterCategory] = useState("all")
+  const [filterType, setFilterType] = useState("all")
+  const [sortBy, setSortBy] = useState("date") // "date" or "amount"
   const [sortOrder, setSortOrder] = useState("desc")
 
   // Formatters
@@ -110,14 +111,28 @@ const ExpenseList = ({ onEditExpense }) => {
         t.description?.toLowerCase().includes(searchLower) ||
         t.category?.name?.toLowerCase().includes(searchLower) ||
         t.amount.toString().includes(searchTerm)
-      const matchesFilter = filterCategory === "all" || t.category?.name === filterCategory
-      return matchesSearch && matchesFilter
+      const matchesFilterCategory = filterCategory === "all" || t.category?.name === filterCategory
+      const isRecurring = t.type === "recurring" || (t.startDate && t.startDate !== t.date)
+      const matchesFilterType =
+        filterType === "all" ||
+        (filterType === "one-time" && !isRecurring) ||
+        (filterType === "recurring" && isRecurring)
+      return matchesSearch && matchesFilterCategory && matchesFilterType
     })
-    result.sort((a, b) =>
-      sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
-    )
+
+    result.sort((a, b) => {
+      if (sortBy === "amount") {
+        const amountA = Number.parseFloat(a.amount)
+        const amountB = Number.parseFloat(b.amount)
+        return sortOrder === "asc" ? amountA - amountB : amountB - amountA
+      } else {
+        // Default to date sorting
+        return sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+      }
+    })
+
     return result
-  }, [expenses, searchTerm, filterCategory, sortOrder])
+  }, [expenses, searchTerm, filterCategory, filterType, sortBy, sortOrder])
 
   const total = filteredTransactions.reduce((sum, t) => sum + Number.parseFloat(t.amount), 0)
   const average = filteredTransactions.length ? total / filteredTransactions.length : 0
@@ -140,8 +155,7 @@ const ExpenseList = ({ onEditExpense }) => {
       console.error(`Failed to fetch receipt for ID ${expenseId}:`, err.message)
     }
   }
-  console.log(expenses);
-  
+
   return (
     <div className="w-full space-y-6">
       {/* Header and Filters */}
@@ -177,12 +191,27 @@ const ExpenseList = ({ onEditExpense }) => {
               ))}
             </select>
             <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="px-3 py-2 rounded-md dark:bg-dark-card dark:text-gray-100"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-3 py-2 border rounded-md dark:bg-dark-card dark:text-gray-100"
             >
-              <option value="desc">Newest first</option>
-              <option value="asc">Oldest first</option>
+              <option value="all">All Types</option>
+              <option value="one-time">One-time</option>
+              <option value="recurring">Recurring</option>
+            </select>
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [by, order] = e.target.value.split("-")
+                setSortBy(by)
+                setSortOrder(order)
+              }}
+              className="px-3 py-2 border rounded-md dark:bg-dark-card dark:text-gray-100"
+            >
+              <option value="date-desc">Date: Newest first</option>
+              <option value="date-asc">Date: Oldest first</option>
+              <option value="amount-desc">Amount: High to Low</option>
+              <option value="amount-asc">Amount: Low to High</option>
             </select>
             <div className="flex items-center gap-2 bg-primary-foreground/10 p-1 rounded">
               <Button variant={viewMode === "card" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("card")}>

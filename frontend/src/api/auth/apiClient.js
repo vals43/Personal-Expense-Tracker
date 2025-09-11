@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getToken } from './authService';
+
 const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
 
 const apiClient = axios.create({
@@ -23,7 +24,7 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Intercepteur de réponses : Fixé !
+// Intercepteur de réponses
 apiClient.interceptors.response.use(
     (response) => {
         return response;
@@ -32,11 +33,9 @@ apiClient.interceptors.response.use(
         if (error.response?.status === 401 || error.response?.status === 403) {
             console.error('Token invalide ou expiré. Redirection vers la page de connexion.');
 
-            // Clear le token pour éviter les relances (ajout clé)
-            localStorage.removeItem('jwtToken');  // Adaptez à votre clé (ex. 'token')
+            localStorage.removeItem('jwtToken'); 
 
-            // Rediriger seulement si pas déjà sur /login
-            if (window.location.pathname !== '/login') {
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
                 window.location.href = '/login';
             }
 
