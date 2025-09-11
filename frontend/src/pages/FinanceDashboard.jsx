@@ -123,108 +123,85 @@ export function FinanceDashboard() {
   const dataExpenses = formatDailyExpenses(dailyExpense);
 
   return (
-    <div className="">
-      <div className="flex items-center justify-between">
+    <div className="w-full px-2 py-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Tableau de Bord Financier</h1>
-          <p className="text-muted-foreground">Suivi de vos finances mensuelles</p>
+          <h1 className="text-3xl font-bold mb-1">Tableau de Bord Financier</h1>
+          <p className="text-gray-500">Suivi de vos finances mensuelles</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
+        <div className="border border-red-500 flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-gray-400" />
+          <span className="text-base text-gray-600">
             {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 md:p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+
+      {/* Résumé mensuel et profil utilisateur */}
+      <div className="flex flex-col md:flex-row gap-6 mb-8 w-full">
+        {/* Monthly Overview prend plus de place (2/3) */}
+        <div className="w-full md:w-2/3 h-full">
           <CashflowCard monthlyData={monthlyData} />
-        </motion.div>
-        <div className="grid grid-cols-1 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+        </div>
+        {/* Carte utilisateur sans background noir */}
+        <div className="w-full md:w-1/3 flex flex-col items-center justify-stretch h-full">
+          <div className="flex flex-col items-center justify-between h-full w-full p-6 border border-red-600 rounded-xl">
             <UserProfileCard name={user.firstName} balance={`${balance || 0}`} />
-          </motion.div>
-          <div className="grid grid-cols-1 gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+            <div className="mt-4 w-full">
               <ActionButtonsCard />
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
-      <BudgetAlertsDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="p-6"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <StatsCard
-            title="Spendings"
-            className="bg-light-card dark:bg-dark-card"
-            value={sumExpenses}
-            trend={2.1}
-            chart={
-              <LineChart
-                data={dataExpenses}
-                dataKey="value"
-                lineColor="#EF4444"
-                height={80}
-                showAxis={false}
-                showDots={false}
-              />
-            }
-          />
-          <StatsCard
-            title="Earnings"
-            className="bg-light-card dark:bg-dark-card"
-            value={sumIncomes}
-            trend={0} // trendIncome is undefined, default to 0
-            chart={
-              <LineChart
-                data={dataIncome}
-                dataKey="value"
-                lineColor="#10B981"
-                height={80}
-                showAxis={false}
-                showDots={false}
-              />
-            }
-          />
-        </div>
-      </motion.div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="lg:col-span-5"
-        >
-          <StatisticsCard />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="lg:col-span-7"
-        >
-          <TransactionCard
-            className="bg-light-card dark:bg-dark-card text-light-text dark:text-dark-text"
-            transactions={transactions}
-          />
-        </motion.div>
+
+      {/* Alertes budget */}
+      <div className="mb-8">
+        <BudgetAlertsDashboard />
+      </div>
+
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <StatsCard
+          title="Dépenses"
+          className="bg-light-card dark:bg-dark-card"
+          value={sumExpenses}
+          trend={2.1}
+          chart={
+            <LineChart
+              data={dataExpenses}
+              dataKey="value"
+              lineColor="#EF4444"
+              height={80}
+              showAxis={false}
+              showDots={false}
+            />
+          }
+        />
+        <StatsCard
+          title="Revenus"
+          className="bg-light-card dark:bg-dark-card"
+          value={sumIncomes}
+          trend={0}
+          chart={
+            <LineChart
+              data={dataIncome}
+              dataKey="value"
+              lineColor="#10B981"
+              height={80}
+              showAxis={false}
+              showDots={false}
+            />
+          }
+        />
+      </div>
+
+      {/* Transactions récentes */}
+      <div>
+        <TransactionCard
+          className="bg-light-card dark:bg-dark-card text-light-text dark:text-dark-text"
+          transactions={transactions}
+        />
       </div>
     </div>
   );
