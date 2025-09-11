@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
-import { AlertCircle, CheckCircle, X } from "lucide-react";
+import { AlertCircle, CheckCircle, X, Lock, Key, Check } from "lucide-react";
 import { changePassword } from "../../api/user/userService";
 
 export default function ChangePasswordForm({ onClose }) {
@@ -52,15 +52,20 @@ export default function ChangePasswordForm({ onClose }) {
   };
 
   return (
-    <Card 
-      className="w-full max-w-md mx-auto mt-6 shadow-lg rounded-2xl bg-light-background dark:bg-dark-card backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50" 
-      title="Change Password"
+    <Card
+      className="w-full max-w-md mx-auto mt-6 shadow-lg rounded-2xl bg-light-background dark:bg-dark-card backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50"
+      title={
+        <div className="flex items-center gap-2">
+          <Key size={18} className="text-blue-600 dark:text-blue-400" />
+          <span>Change Password</span>
+        </div>
+      }
     >
       <div className="flex justify-end">
-        <Button 
-          onClick={onClose} 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          onClick={onClose}
+          variant="ghost"
+          size="icon"
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
           <X size={18} />
@@ -70,41 +75,69 @@ export default function ChangePasswordForm({ onClose }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="text-sm font-medium">Old Password</label>
-          <Input
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            required
-            placeholder="Enter your current password"
-          />
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
+            />
+            <Input
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              required
+              placeholder="Enter your current password"
+              className="pl-10"
+            />
+          </div>
         </div>
         <div>
           <label className="text-sm font-medium">New Password</label>
-          <Input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            placeholder="Enter a new password"
-          />
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
+            />
+            <Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              placeholder="Enter a new password"
+              className="pl-10"
+            />
+          </div>
         </div>
         <div>
           <label className="text-sm font-medium">Confirm New Password</label>
-          <Input
-            type="password"
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-            required
-            placeholder="Confirm new password"
-          />
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
+            />
+            <Input
+              type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              required
+              placeholder="Confirm new password"
+              className="pl-10"
+            />
+          </div>
         </div>
 
         <Button
           type="submit"
           disabled={loading || newPassword.length === 0 || newPassword !== confirmNewPassword}
-          className="w-full bg-blue-600 hover:bg-blue-700"
+          className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
         >
-          {loading ? "Updating..." : "Update Password"}
+          {loading ? (
+            "Updating..."
+          ) : (
+            <>
+              <Check size={18} />
+              Update Password
+            </>
+          )}
         </Button>
       </form>
 
