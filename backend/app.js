@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 8080;
 
 // CORS configuration to allow the frontend origin
 const corsOptions = {
-  origin: 'http://localhost:5173', // Match your frontend URL (Vite development server)
+  origin: ['http://localhost:5173', 'http://localhost:5174'], // Match your frontend URL (Vite development server)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   credentials: true, // Allow cookies or authentication if needed
