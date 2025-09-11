@@ -9,7 +9,6 @@ import {
   DollarSignIcon,
   FileTextIcon,
   XIcon,
-  PencilIcon,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -105,25 +104,23 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border border-gray-200 dark:border-gray-700"
+          className="relative w-full max-w-md bg-light-card dark:bg-dark-card shadow-2xl rounded-2xl border border-light-border dark:border-dark-border"
           onClick={(e) => e.stopPropagation()}
         >
           {/* bouton X */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:hover:text-gray-200 transition"
+            className="absolute top-3 right-3 p-2 rounded-full bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text hover:bg-gray-200 dark:hover:bg-gray-700 transition"
           >
             <XIcon className="w-5 h-5" />
           </button>
 
           {/* contenu */}
           <div className="p-6">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-xl m-auto font-bold text-gray-900 dark:text-white">
-                {initialData ? "Update Income" : "Add New Income"}
-              </h2>
-            </div>
-            <p className="text-sm flex justify-around text-gray-600 dark:text-gray-400 mb-6">
+            <h2 className="text-xl font-bold text-center text-light-text dark:text-dark-text">
+              {initialData ? "Update Income" : "Add New Income"}
+            </h2>
+            <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-6">
               Track your financial progress
             </p>
 
@@ -133,7 +130,7 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
               )}
 
               {/* Amount */}
-              <div className="relative">
+              <div>
                 <label className="block text-sm font-semibold mb-1">Amount *</label>
                 <div className="relative">
                   <DollarSignIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -143,14 +140,14 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
                     value={formData.amount}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-10 pr-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
                 {errors.amount && <p className="text-xs text-red-500">{errors.amount}</p>}
               </div>
 
               {/* Source */}
-              <div className="relative">
+              <div>
                 <label className="block text-sm font-semibold mb-1">Source *</label>
                 <div className="relative">
                   <TagIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -159,7 +156,7 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
                     value={formData.source}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-10 pr-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   >
                     <option value="">Select a source</option>
                     {incomeCategories.map((c) => (
@@ -171,7 +168,7 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
               </div>
 
               {/* Date */}
-              <div className="relative">
+              <div>
                 <label className="block text-sm font-semibold mb-1">Date *</label>
                 <div className="relative">
                   <CalendarIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -181,17 +178,15 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
                     value={formData.date}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-10 pr-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
                 {errors.date && <p className="text-xs text-red-500">{errors.date}</p>}
               </div>
 
               {/* Description */}
-              <div className="relative">
-                <label className="block text-sm font-semibold mb-1">
-                  Description (Optional)
-                </label>
+              <div>
+                <label className="block text-sm font-semibold mb-1">Description (Optional)</label>
                 <div className="relative">
                   <FileTextIcon className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                   <input
@@ -199,7 +194,7 @@ const TransactionForm = ({ onSubmit, initialData = null, onClose }) => {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-10 pr-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
               </div>
