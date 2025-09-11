@@ -7,22 +7,22 @@ export const TransactionCard = ({
   onTransactionClick
 }) => {
   return <Card title={title} className={`${className}`}>
-      <div className="space-y-3">
+      <div className="">
         {transactions.map(transaction => <div key={transaction.id} className="flex items-center p-2 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-border" onClick={() => onTransactionClick && onTransactionClick(transaction)}>
             {transaction.icon && <div className="mr-3 p-2 rounded-lg">
                 {transaction.icon}
               </div>}
             <div className="flex-1 min-w-0">
               <h4 className=" font-medium truncate">
-                {transaction.title}
+                {transaction.category || transaction.source}
               </h4>
-              {transaction.subtitle && <p className="text-xs truncate">
-                  {transaction.subtitle}
+              {transaction.description && <p className="text-xs truncate">
+                  {transaction.description}
                 </p>}
             </div>
             <div className="text-right">
-              <span className={`font-medium ${transaction.isIncome ? 'text-green-500' : 'text-red-500'}`}>
-                {transaction.isIncome ? '+' : '-'}$
+              <span className={`font-medium ${transaction.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                {transaction.type == 'income' ? '+' : '-'}$
                 {Math.abs(transaction.amount).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2

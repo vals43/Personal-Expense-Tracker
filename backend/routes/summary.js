@@ -7,7 +7,8 @@ const {
   getBudgetAlerts,
   getDailyAverages,
   getIncomesBySource,
-  getExpensesByCategory
+  getExpensesByCategory,
+  getRecentTransactions
 } = require('../controllers/summaryController');
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get('/monthly', getMonthlySummary);
 router.get('/daily', getDailyAverages);
 router.get('/', getCustomSummary);
 router.get('/alerts', getBudgetAlerts);
+router.get('/transaction', getRecentTransactions);
 router.get('/incomeCategory', getIncomesBySource);
 router.get('/expensesCategory', getExpensesByCategory);
 
