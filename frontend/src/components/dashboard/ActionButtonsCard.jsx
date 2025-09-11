@@ -51,9 +51,9 @@ export function ActionButtonsCard() {
     <>
     <motion.div
       whileHover={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}
-      className={`rounded-xl p-4`}
+      className={`rounded-xl`}
     >
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
         {actions.map((action, index) => (
           <ActionButton
             key={index}

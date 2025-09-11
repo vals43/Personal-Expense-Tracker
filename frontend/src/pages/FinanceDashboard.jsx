@@ -114,7 +114,7 @@ export function FinanceDashboard() {
           <h1 className="text-3xl font-bold mb-1">Tableau de Bord Financier</h1>
           <p className="text-gray-500">Suivi de vos finances mensuelles</p>
         </div>
-        <div className="border border-red-500 flex items-center gap-2">
+        <div className=" flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
           <span className="text-base text-gray-600">
             {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
@@ -130,9 +130,9 @@ export function FinanceDashboard() {
         </div>
         {/* Carte utilisateur sans background noir */}
         <div className="w-full md:w-1/3 flex flex-col items-center justify-stretch h-full">
-          <div className="flex flex-col items-center justify-between h-full w-full p-6 border border-red-600 rounded-xl">
+          <div className="flex flex-col items-center justify-between h-full w-full mt-10 rounded-xl">
             <UserProfileCard name={user.firstName} balance={`${balance || 0}`} />
-            <div className="mt-4 w-full">
+            <div className="mt-4 ">
               <ActionButtonsCard />
             </div>
           </div>

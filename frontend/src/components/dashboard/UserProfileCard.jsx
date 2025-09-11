@@ -12,7 +12,7 @@ export function UserProfileCard({ name, balance }) {
   return (
     <motion.div
       whileHover={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}
-      className="rounded-xl flex px-16 flex-col items-center hover:scale-105 transition-all duration-500"
+      className="rounded-xl flex w-full  flex-col items-center hover:scale-105 transition-all duration-500"
     >
       <div
         className={"relative w-full h-48 text-light-text dark:text-dark-text rounded-2xl p-6 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-400 dark:from-gray-900 dark:to-black"}
