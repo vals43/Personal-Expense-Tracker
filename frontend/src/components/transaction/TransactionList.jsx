@@ -12,18 +12,19 @@ import {
   SearchIcon,
 } from "lucide-react";
 import Button from "../ui/Button";
-// Importation du hook du contexte
 import { useIncomes, useIncomeActions } from "../../api/incomes/getJsonIncomes";
-// Le formulaire n'est plus nécessaire ici
-// import TransactionForm from "./TransactionForm"; 
 
 // === UI Subcomponents ===
 const Card = ({ children, className }) => (
   <div className={`rounded-lg bg-white dark:bg-dark-card shadow-sm p-4 ${className}`}>{children}</div>
 );
 const CardContent = ({ children, className }) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
-const CardHeader = ({ children, className }) => <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>;
-const CardTitle = ({ children, className }) => <h3 className={`text-xl font-semibold tracking-tight ${className}`}>{children}</h3>;
+const CardHeader = ({ children, className }) => (
+  <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+);
+const CardTitle = ({ children, className }) => (
+  <h3 className={`text-xl font-semibold tracking-tight ${className}`}>{children}</h3>
+);
 const CardAction = ({ children }) => <div className="ml-auto">{children}</div>;
 
 const Table = ({ children }) => (
@@ -33,13 +34,14 @@ const Table = ({ children }) => (
 );
 const TableBody = ({ children }) => <tbody>{children}</tbody>;
 const TableCell = ({ children, className }) => <td className={`p-4 align-middle ${className}`}>{children}</td>;
-const TableHead = ({ children, className }) => <th className={`h-12 px-4 text-left font-medium text-muted-foreground ${className}`}>{children}</th>;
+const TableHead = ({ children, className }) => (
+  <th className={`h-12 px-4 text-left font-medium text-muted-foreground ${className}`}>{children}</th>
+);
 const TableHeader = ({ children }) => <thead className="[&_tr]:border-b">{children}</thead>;
 const TableRow = ({ children, className }) => (
   <tr className={`border-b transition-colors hover:bg-muted/50 ${className}`}>{children}</tr>
 );
 
-// Ajout de la prop 'onEdit' pour la gestion de l'édition par le parent
 const TransactionList = ({ type, onEdit }) => {
   const { incomes } = useIncomes();
   const { handleDeleteIncome } = useIncomeActions();
@@ -48,15 +50,16 @@ const TransactionList = ({ type, onEdit }) => {
   const [viewMode, setViewMode] = useState("card");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [filterType, setFilterType] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
-  // Ces états ne sont plus nécessaires, la logique est dans le parent
-  // const [isFormOpen, setIsFormOpen] = useState(false);
-  // const [editTransaction, setEditTransaction] = useState(null);
   const [isDeleting, setIsDeleting] = useState(null);
 
   // Formatters
   const formatDate = (dateString) =>
-    new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(dateString));
+    new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+      new Date(dateString)
+    );
   const formatAmount = (amount) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(parseFloat(amount));
 
@@ -64,6 +67,15 @@ const TransactionList = ({ type, onEdit }) => {
     transactionType === "income" ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500";
   const getTypeIcon = (transactionType) =>
     transactionType === "income" ? <ArrowUpIcon className="h-5 w-5" /> : <ArrowDownIcon className="h-5 w-5" />;
+  const getTransactionTypeBadge = (transaction) => {
+    const isRecurring = transaction.type === "recurring" || (transaction.startDate && transaction.startDate !== transaction.date);
+    return {
+      label: isRecurring ? "Recurring" : "One-time",
+      className: isRecurring
+        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+    };
+  };
 
   // Filters
   const uniqueFilters = useMemo(() => {
@@ -79,19 +91,29 @@ const TransactionList = ({ type, onEdit }) => {
         t.category?.toLowerCase().includes(searchLower) ||
         t.source?.toLowerCase().includes(searchLower) ||
         t.amount.toString().includes(searchTerm);
-
-      const matchesFilter =
+      const matchesFilterCategory =
         filterCategory === "all" ||
         (type === "income" ? t.source === filterCategory : t.category === filterCategory);
-
-      return matchesSearch && matchesFilter;
+      const isRecurring = t.type === "recurring" || (t.startDate && t.startDate !== t.date);
+      const matchesFilterType =
+        filterType === "all" ||
+        (filterType === "one-time" && !isRecurring) ||
+        (filterType === "recurring" && isRecurring);
+      return matchesSearch && matchesFilterCategory && matchesFilterType;
     });
 
-    result.sort((a, b) =>
-      sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
-    );
+    result.sort((a, b) => {
+      if (sortBy === "amount") {
+        const amountA = parseFloat(a.amount);
+        const amountB = parseFloat(b.amount);
+        return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
+      } else {
+        // Default to date sorting
+        return sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
+      }
+    });
     return result;
-  }, [transactions, searchTerm, filterCategory, sortOrder, type]);
+  }, [transactions, searchTerm, filterCategory, filterType, sortBy, sortOrder, type]);
 
   const total = filteredTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
   const average = filteredTransactions.length ? total / filteredTransactions.length : 0;
@@ -107,7 +129,6 @@ const TransactionList = ({ type, onEdit }) => {
     }
   };
 
-  // La fonction pour l'édition appelle simplement la prop `onEdit` passée par le parent
   const handleEdit = (transaction) => {
     if (onEdit) {
       onEdit(transaction);
@@ -140,7 +161,7 @@ const TransactionList = ({ type, onEdit }) => {
               />
             </div>
 
-            {/* Filter */}
+            {/* Category/Source Filter */}
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
@@ -156,12 +177,18 @@ const TransactionList = ({ type, onEdit }) => {
 
             {/* Sort */}
             <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="px-3 py-2 rounded-md dark:bg-dark-card dark:text-gray-100"
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [by, order] = e.target.value.split("-");
+                setSortBy(by);
+                setSortOrder(order);
+              }}
+              className="px-3 py-2 border rounded-md dark:bg-dark-card dark:text-gray-100"
             >
-              <option value="desc">Newest first</option>
-              <option value="asc">Oldest first</option>
+              <option value="date-desc">Date: Newest first</option>
+              <option value="date-asc">Date: Oldest first</option>
+              <option value="amount-desc">Amount: High to Low</option>
+              <option value="amount-asc">Amount: Low to High</option>
             </select>
 
             {/* Toggle View */}
@@ -215,12 +242,11 @@ const TransactionList = ({ type, onEdit }) => {
                         </CardTitle>
                         <div className="flex items-center gap-2 mt-2">
                           {getTypeIcon(type)}
-                          <span>{type === "income" ? t.source : t.category}</span>
+                          <span>{ t.source }</span>
                         </div>
                       </div>
                       <CardAction>
                         <div className="flex items-center gap-1">
-                          {/* Appel de la fonction du parent pour l'édition */}
                           <Button variant="ghost" size="sm" onClick={() => handleEdit(t)}>
                             <EditIcon className="h-4 w-4" />
                           </Button>
@@ -268,7 +294,7 @@ const TransactionList = ({ type, onEdit }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>AMOUNT</TableHead>
-                  <TableHead>{type === "income" ? "SOURCE" : "CATEGORY"}</TableHead>
+                  <TableHead>SOURCE</TableHead>
                   <TableHead>DATE</TableHead>
                   <TableHead>DESCRIPTION</TableHead>
                   <TableHead className="text-right">ACTIONS</TableHead>
@@ -285,7 +311,6 @@ const TransactionList = ({ type, onEdit }) => {
                     <TableCell>{t.description || "—"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        {/* Appel de la fonction du parent pour l'édition */}
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(t)}>
                           <EditIcon className="h-4 w-4" />
                         </Button>
