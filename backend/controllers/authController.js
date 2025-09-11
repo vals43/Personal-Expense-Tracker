@@ -1,38 +1,44 @@
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const signup = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    
+    const { firstName, lastName, email, password } = req.body;
+
+    // 🔹 Validation : firstName et lastName obligatoires
+    if (!firstName || !lastName) {
+      return res.status(400).json({ error: 'firstName and lastName are required' });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'Invalid email or password' });
     }
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-    
+
     // Create user
     const user = await User.create({
+      firstName,
+      lastName,
       email,
       password: hashedPassword
     });
-    
+
     // Generate token
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
-    
+
     res.status(201).json({
       message: 'User created successfully',
       token,
-      user: { id: user.id, email: user.email }
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -42,27 +48,27 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
+
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
+
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
-    
+
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: { id: user.id, email: user.email }
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -1,0 +1,633 @@
+openapi: 3.0.0
+info:
+  title: Smart Personal Expense Tracker API
+  description: REST API for managing personal expenses, incomes, receipts, and categories.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        date:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        type:
+          type: string
+          enum: [one-time, recurring]
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        receipt:
+          type: string
+          format: binary
+    Income:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        date:
+          type: string
+          format: date-time
+        source:
+          type: string
+        description:
+          type: string
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    SummaryData:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            expenses:
+              type: number
+            income:
+              type: number
+            balance:
+              type: number
+        expensesByCategory:
+          type: object
+          additionalProperties:
+            type: number
+        expenseCount:
+          type: integer
+        incomeCount:
+          type: integer
+    AlertData:
+      type: object
+      properties:
+        alert:
+          type: boolean
+        message:
+          type: string
+        details:
+          $ref: '#/components/schemas/SummaryData'
+
+paths:
+  /auth/signup:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, firstName, lastName]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        '201':
+          description: User created
+
+  /auth/login:
+    post:
+      summary: Login and receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /expenses:
+    get:
+      summary: List all user expenses
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+            format: date-time
+          description: Start date (ISO 8601 format)
+        - in: query
+          name: end
+          schema:
+            type: string
+            format: date-time
+          description: End date (ISO 8601 format)
+        - in: query
+          name: category
+          schema:
+            type: string
+            format: uuid
+          description: Category ID
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [recurring, one-time]
+          description: Type of expense
+      responses:
+        '200':
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Expense'
+    post:
+      summary: Create a new expense
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [amount, date, categoryId]
+              properties:
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                categoryId:
+                  type: string
+                  format: uuid
+                description:
+                  type: string
+                type:
+                  type: string
+                  enum: [one-time, recurring]
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                receipt:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+
+  /expenses/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get a single expense
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Expense data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    put:
+      summary: Update an expense
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                categoryId:
+                  type: string
+                  format: uuid
+                description:
+                  type: string
+                type:
+                  type: string
+                  enum: [one-time, recurring]
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                receipt:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Expense updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    delete:
+      summary: Delete an expense
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Expense deleted
+
+  /incomes:
+    get:
+      summary: List all incomes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+            format: date-time
+          description: Start date (ISO 8601 format)
+        - in: query
+          name: end
+          schema:
+            type: string
+            format: date-time
+          description: End date (ISO 8601 format)
+      responses:
+        '200':
+          description: List of incomes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Income'
+    post:
+      summary: Create new income
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, date]
+              properties:
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Income created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+
+  /incomes/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get an income entry
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Income data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+    put:
+      summary: Update an income entry
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Income updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+    delete:
+      summary: Delete an income entry
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Income deleted
+
+  /categories:
+    get:
+      summary: List user categories
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Create new category
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+  /categories/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      summary: Rename a category
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+    delete:
+      summary: Delete a category
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Category deleted
+
+  /summary/monthly:
+    get:
+      summary: Get monthly summary
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: string
+            example: "2025-09"
+          description: Month in YYYY-MM format
+      responses:
+        '200':
+          description: Monthly summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryData'
+
+  /summary:
+    get:
+      summary: Get summary for custom range
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+            format: date-time
+          description: Start date (ISO 8601 format)
+        - in: query
+          name: end
+          schema:
+            type: string
+            format: date-time
+          description: End date (ISO 8601 format)
+      responses:
+        '200':
+          description: Summary for custom date range
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryData'
+
+  /summary/alerts:
+    get:
+      summary: Budget overrun alert
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Alert info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertData'
+
+  /receipts/{id}:
+    get:
+      summary: Download/view receipt
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Receipt file
+
+  /user/profile:
+    get:
+      summary: Get user profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
+
+  /user/change-password:
+    post:
+      summary: Change user password
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword:
+                  type: string
+                  description: The current password of the user.
+                newPassword:
+                  type: string
+                  description: The new password for the user.
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password updated successfully."
+        '400':
+          description: Invalid request body or missing information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Ancien et nouveau mots de passe requis."
+        '401':
+          description: Incorrect old password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Ancien mot de passe incorrect."
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Une erreur est survenue lors de la mise à jour."
