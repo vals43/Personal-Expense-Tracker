@@ -10,9 +10,11 @@ import { Calendar, CreditCardIcon } from 'lucide-react';
 import { ActionButtonsCard } from '../components/dashboard/ActionButtonsCard';
 import { useJsonUser } from '../api/user/useJsonUser.js';
 import { getYearlySummary, useJsonDailySummary, useJsonLastTransaction, useJsonSummary } from '../api/summary/useJsonSummary.js';
-import { getJsonExpenses } from '../api/expenses/expenseContext.jsx';
+import { getJsonExpenses, getRecurringMonth } from '../api/expenses/expenseContext.jsx';
 import { getJsonIncomes } from '../api/incomes/getJsonIncomes.jsx';
 import BudgetAlertsDashboard from '../components/dashboard/budget-alerts-dashboard.jsx';
+import { getRecurringExpenseOfMonth } from '../api/summary/summaryService.js';
+
 
 
 
@@ -60,14 +62,13 @@ export function FinanceDashboard() {
   const dailyIncome = useJsonDailySummary(`${year}-${mois}-01`, `${year}-${Number(mois) + 1}-01`);
   const dailyExpense = useJsonDailySummary(`${year}-${mois}-01`, `${year}-${Number(mois) + 1}-01`);
 
+  const reccuringMonth = getRecurringMonth(mois, year)
+  
   useEffect(() => {
     async function fetchMonthlyData() {
       try {
         const data = await getYearlySummary();
-        //const data2 = await ....()
-        //final = concat(data, data2)
         setMonthlyData(data || 'loading');
-        //setMonthlyData(final || 'loading');
       } catch (error) {
         console.error('Failed to fetch monthly data:', error);
         setMonthlyData('error');
@@ -76,7 +77,7 @@ export function FinanceDashboard() {
     fetchMonthlyData();
   }, []); // Empty dependency array to fetch once on mount; add dependencies if dynamic updates are needed
 
-  if (!user || !summary || !expenses || !incomes || !dailyIncome || !dailyExpense || !transactions || !monthlyData) {
+  if (!user || !summary || !reccuringMonth || !expenses || !incomes || !dailyIncome || !dailyExpense || !transactions || !monthlyData) {
     return (
       <div className="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-sm text-center text-light-text dark:text-dark-text">
         <p className="text-gray-500 dark:text-gray-400">
@@ -95,7 +96,6 @@ export function FinanceDashboard() {
       </div>
     );
   }
-  console.log(monthlyData);
   
 
   let sumExpenses = summary.totals.expenses;
@@ -107,6 +107,10 @@ export function FinanceDashboard() {
 
   const dataIncome = formatDailyIncomes(dailyIncome);
   const dataExpenses = formatDailyExpenses(dailyExpense);
+
+
+  
+  
 
   return (
     <div className="w-full px-2 py-8">

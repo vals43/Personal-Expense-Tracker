@@ -8,6 +8,7 @@ import {
   deleteExistingExpense,
 } from "./expenseService";
 import { NotificationModal } from "../../components/ui/NotificationModal";
+import { getRecurringExpenseOfMonth } from "../summary/summaryService";
 
 export function getJsonExpenses() {
   const [data, setData] = useState(null);
@@ -19,6 +20,23 @@ export function getJsonExpenses() {
         setData(data2);
       } catch (error) {
         console.error("Erreur lors du fetch des dépenses :", error);
+      }
+    };
+    fetchAllData();
+  }, []);
+
+  return data;
+}
+export function getRecurringMonth(month, year) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const data2 = await getRecurringExpenseOfMonth(month, year);
+        setData(data2);
+      } catch (error) {
+        console.error("Erreur lors du fetch des dépenses recurrente du mois :", error);
       }
     };
     fetchAllData();

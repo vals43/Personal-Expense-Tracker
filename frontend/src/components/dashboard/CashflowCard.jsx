@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   BarChart,
   Bar,
@@ -11,7 +11,8 @@ import {
 } from "recharts"
 import { useTheme } from "../theme/ThemeProvider"
 
-import {  useJsonDailySummary } from '../../api/summary/useJsonSummary';
+import { useJsonDailySummary } from '../../api/summary/useJsonSummary';
+import { getRecurringMonth } from "../../api/expenses/expenseContext";
 
 function formatSummaryData(monthlySummaryArray) {
   return monthlySummaryArray.map(summary => {
@@ -28,6 +29,51 @@ function formatSummaryData(monthlySummaryArray) {
   });
 }
 
+function transformRecurringExpensesDate(expensesData, month, year) {
+  return expensesData.map(expense => {
+    const newDate = new Date(year, month - 1, 2);
+
+    return {
+      ...expense,
+      date: newDate.toISOString(),
+    };
+  });
+}
+
+function formatForSummary(recurringExpenses) {
+  return recurringExpenses.map(expense => {
+    const date = new Date(expense.date);
+    const formattedDate = date.toISOString().split('T')[0];
+  
+    return {
+      balance: 0,
+      date: formattedDate,
+      expenses: parseFloat(expense.amount),
+      incomes: 0,
+    };
+  });
+}
+
+// Nouveau hook personnalisé pour récupérer et formater les données récurrentes
+const useRecurringMonthData = (mois, year) => {
+  const [formattedRecData, setFormattedRecData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Appelez le hook React getRecurringMonth au niveau supérieur de ce hook personnalisé.
+  const recurringMonthData = getRecurringMonth(mois, year);
+
+  useEffect(() => {
+    if (recurringMonthData) {
+      const transformedData = transformRecurringExpensesDate(recurringMonthData, mois, year);
+      const formattedData = formatForSummary(transformedData);
+      setFormattedRecData(formattedData);
+      setLoading(false); 
+    }
+  }, [recurringMonthData, mois, year]);
+
+  return { formattedRecData, loading };
+};
+
 export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
   const theme = useTheme().theme
   const axisColor = theme === "light" ? "#333333" : "#e5e7eb"
@@ -38,33 +84,58 @@ export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
   const options = { year: 'numeric', month: 'long' };
   const formattedDate = new Intl.DateTimeFormat('en-US', options).format(today);
 
-  
   const year = new Date().toISOString().split('-')[0];
   const mois = new Date().toISOString().split('-')[1];
 
-  const sampleDailyData = useJsonDailySummary(`${year}-${mois}-01`,`${year}-${Number(mois)+1}-01`)
-
-  
+  const sampleDailyData = useJsonDailySummary(`${year}-${mois}-01`, `${year}-${Number(mois) + 1}-01`)
   const sampleMonthlyData = formatSummaryData(monthlyData)
   
-  
-  
-  
+  const { formattedRecData, loading } = useRecurringMonthData(mois, year);
+
+  const finalDailyData = useMemo(() => {
+    // Si l'une des sources de données n'est pas chargée, on retourne un tableau vide pour éviter les erreurs.
+    if (loading || !formattedRecData || !sampleDailyData) {
+        return [];
+    }
+    
+    // Combine les données récurrentes et les données quotidiennes.
+    const combinedData = [...formattedRecData, ...sampleDailyData];
+
+    // Crée une carte pour regrouper les données par date.
+    const dailyMap = new Map();
+    combinedData.forEach(item => {
+      const { date, expenses, incomes } = item;
+      if (dailyMap.has(date)) {
+        const existing = dailyMap.get(date);
+        dailyMap.set(date, {
+          ...existing,
+          expenses: existing.expenses + expenses,
+          incomes: existing.incomes + incomes,
+        });
+      } else {
+        dailyMap.set(date, {
+          date,
+          expenses,
+          incomes,
+          balance: incomes - expenses
+        });
+      }
+    });
+
+    // Trie les données par date.
+    const sortedData = Array.from(dailyMap.values()).sort((a, b) => new Date(a.date) - new Date(b.date));
+    return sortedData;
+  }, [formattedRecData, sampleDailyData, loading]);
+
   const currentData = viewMode === "monthly" ? sampleMonthlyData : null
-  const currentDailyData = viewMode === "daily" ? sampleDailyData : []
-
-  const currentMonthData = sampleMonthlyData[Number(mois)-1]
-
   const dailySummary = useMemo(() => {
-    if (currentDailyData.length === 0) return null
-    const totalIncome = currentDailyData.reduce((sum, day) => sum + day.incomes, 0)
-    const totalExpenses = currentDailyData.reduce((sum, day) => sum + day.expenses, 0)
+    if (finalDailyData.length === 0) return null
+    const totalIncome = finalDailyData.reduce((sum, day) => sum + day.incomes, 0)
+    const totalExpenses = finalDailyData.reduce((sum, day) => sum + day.expenses, 0)
     const netBalance = totalIncome - totalExpenses
-    const avgDailyExpenses = totalExpenses / currentDailyData.length
-    return { totalIncome, totalExpenses, netBalance, avgDailyExpenses, daysTracked: currentDailyData.length }
-  }, [currentDailyData])
-
-
+    const avgDailyExpenses = totalExpenses / finalDailyData.length
+    return { totalIncome, totalExpenses, netBalance, avgDailyExpenses, daysTracked: finalDailyData.length }
+  }, [finalDailyData])
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
@@ -73,7 +144,7 @@ export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
     new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" })
 
   const monthlyChartData = currentData || []
-  const dailyChartData = currentDailyData.map((d) => ({
+  const dailyChartData = finalDailyData.map((d) => ({
     date: formatDate(d.date),
     income: d.incomes,
     expenses: d.expenses,
@@ -96,8 +167,21 @@ export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
     return null
   }
 
+  const currentMonthData = sampleMonthlyData[Number(mois) - 1]
+
+  // Affiche le message de chargement si les données ne sont pas encore prêtes
+  if (loading || finalDailyData.length === 0) {
+    return (
+      <div className="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-sm text-center text-light-text dark:text-dark-text">
+        <p className="text-gray-500 dark:text-gray-400">
+          Chargement des données mensuelles...
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="text-foreground  transition-all" data-id={dataId}>
+    <div className="text-foreground transition-all" data-id={dataId}>
       <div className="lg:p-8">
         {/* Single Card */}
         <div className="rounded-2xl border-l-4 border-b-4 dark:border-dark-border bg-light-card dark:bg-dark-card p-4 sm:p-6 lg:p-8 shadow-lg">
@@ -156,10 +240,10 @@ export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
                   <th className="py-2">Total Expenses</th>
                   {
                     viewMode === "monthly" ?
-                  <th className="py-2">Current month</th> 
-                  :
-                  <th className="py-2">Avg Daily Spend</th> 
-                    
+                      <th className="py-2">Current month</th>
+                      :
+                      <th className="py-2">Avg Daily Spend</th>
+
                   }
                 </tr>
               </thead>
