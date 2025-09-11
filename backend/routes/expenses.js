@@ -7,7 +7,8 @@ const {
   getExpense,
   createExpense,
   updateExpense,
-  deleteExpense
+  deleteExpense,
+  getMonthlyRecurringExpenses
 } = require('../controllers/expenseController');
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.use(authenticateToken);
 
 router.get('/', getAllExpenses);
+router.get('/recurring', getMonthlyRecurringExpenses);
 router.get('/:id', getExpense);
 router.post('/', upload.single('receipt'), createExpense);
 router.put('/:id', upload.single('receipt'), updateExpense);

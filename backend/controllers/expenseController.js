@@ -40,6 +40,60 @@ const getAllExpenses = async (req, res) => {
   }
 };
 
+
+const getMonthlyRecurringExpenses = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const userId = req.user.id;
+
+    if (!month || !year) {
+      return res.status(400).json({ error: 'Les paramètres "month" et "year" sont requis.' });
+    }
+
+    // Définir le début et la fin du mois recherché
+    const targetMonthStart = moment.utc(`${year}-${month}-01`, 'YYYY-MM-DD').startOf('month');
+    const targetMonthEnd = moment.utc(`${year}-${month}-01`, 'YYYY-MM-DD').endOf('month');
+    
+    // Construire la clause de recherche pour les dépenses récurrentes valides
+    const whereClause = {
+      userId,
+      type: 'recurring',
+      [Op.and]: [
+        // La dépense doit avoir commencé avant ou pendant le mois ciblé
+        {
+          startDate: {
+            [Op.lte]: targetMonthEnd.toDate()
+          }
+        },
+        // ET la dépense ne doit pas avoir de date de fin OU sa date de fin doit être après le début du mois ciblé
+        {
+          [Op.or]: [
+            { endDate: { [Op.is]: null } },
+            {
+              endDate: {
+                [Op.gte]: targetMonthStart.toDate()
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    // Rechercher les dépenses dans la base de données
+    const expenses = await Expense.findAll({
+      where: whereClause,
+      include: [{ model: Category, as: 'category' }],
+      order: [['date', 'DESC']]
+    });
+    
+    res.status(200).json(expenses);
+  } catch (error) {
+    console.error('Erreur dans getMonthlyRecurringExpenses:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 const getExpense = async (req, res) => {
   try {
     const { id } = req.params;
@@ -162,5 +216,6 @@ module.exports = {
   getExpense,
   createExpense,
   updateExpense,
-  deleteExpense
+  deleteExpense,
+  getMonthlyRecurringExpenses
 };

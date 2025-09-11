@@ -232,6 +232,82 @@ paths:
               schema:
                 $ref: '#/components/schemas/Expense'
 
+  /expenses/recurring:
+    get:
+      summary: Get all recurring expenses for a specific month
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: number
+            example: 9
+          required: true
+          description: Le numéro du mois pour la recherche (ex. 8 pour août).
+        - in: query
+          name: year
+          schema:
+            type: number
+            example: 2025
+          required: true
+          description: L'année pour la recherche (ex. 2023).
+      responses:
+        '200':
+          description: List of recurring expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    description:
+                      type: string
+                    amount:
+                      type: number
+                    date:
+                      type: string
+                      format: date-time
+                    type:
+                      type: string
+                      enum: [recurring]
+                    recurring:
+                      type: boolean
+                    userId:
+                      type: number
+                    categoryId:
+                      type: number
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Les paramètres \"month\" et \"year\" sont requis."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /expenses/{id}:
     parameters:
       - in: path
