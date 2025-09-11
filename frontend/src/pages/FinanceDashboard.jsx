@@ -64,7 +64,10 @@ export function FinanceDashboard() {
     async function fetchMonthlyData() {
       try {
         const data = await getYearlySummary();
+        //const data2 = await ....()
+        //final = concat(data, data2)
         setMonthlyData(data || 'loading');
+        //setMonthlyData(final || 'loading');
       } catch (error) {
         console.error('Failed to fetch monthly data:', error);
         setMonthlyData('error');
@@ -92,12 +95,11 @@ export function FinanceDashboard() {
       </div>
     );
   }
-  console.log(transactions);
+  console.log(monthlyData);
   
 
   let sumExpenses = summary.totals.expenses;
   let sumIncomes = summary.totals.income;
-  let balanceMonthly = String(summary.totals.balance); // monthly
 
   const totalIncome = incomes.reduce((total, income) => total + Number(income.amount), 0);
   const totalExpenses = expenses.reduce((total, expense) => total + Number(expense.amount), 0);

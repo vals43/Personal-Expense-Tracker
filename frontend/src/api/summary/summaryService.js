@@ -1,4 +1,6 @@
 import apiClient from "../auth/apiClient";
+import { useEffect, useState } from "react";
+import moment from 'moment';
 
 export async function getSummary(month) {
   const year = new Date().toISOString().split('-')[0];
@@ -108,6 +110,19 @@ export async function getIncomesBySource() {
     throw error;
   }
 }
+export async function getRecurringExpenseOfMonth(month, year) {
+  try {
+    const response = await apiClient.get(`api/expenses/recurring?month=${month}&year=${year}`);
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error in getRecurringExpenseOfMonth:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+}
 export async function getLastTransaction() {
   try {
     const response = await apiClient.get(`api/summary/transaction`);
@@ -135,3 +150,60 @@ export async function getExpensesBySource() {
     throw error;
   }
 }
+export const getYearlySummary = async () => {
+  try {
+    const currentYear = moment().utc().year();
+    const monthlySummariesPromises = [];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (let i = 0; i < 12; i++) {
+      const targetMonth = moment().utc().year(currentYear).month(i).format('YYYY-MM');
+      const monthNumber = i + 1;
+
+      const summaryPromise = Promise.all([
+        getSummary(targetMonth),
+        getRecurringExpenseOfMonth(monthNumber, currentYear)
+      ])
+        .then(([summary, recurringExpenses]) => {
+          // Calculer le total des dépenses récurrentes pour le mois
+          const totalRecurringExpenses = recurringExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+          
+          // Ajouter les dépenses récurrentes aux dépenses totales
+          const totalExpenses = (summary.expenses || 0) + totalRecurringExpenses;
+
+          // Mettre à jour les totaux globaux du résumé initial
+          const newTotalsExpenses = (summary.totals.expenses || 0) + totalRecurringExpenses;
+          const newTotalsBalance = (summary.totals.income || 0) - newTotalsExpenses;
+
+          return {
+            month: monthNames[i],
+            ...summary,
+            expenses: totalExpenses, // Mettre à jour la propriété 'expenses'
+            balance: (summary.income || 0) - totalExpenses, // Mettre à jour la propriété 'balance'
+            totals: {
+              ...summary.totals,
+              expenses: newTotalsExpenses, // Mettre à jour les dépenses dans le sous-objet 'totals'
+              balance: newTotalsBalance, // Mettre à jour le solde dans le sous-objet 'totals'
+            },
+          };
+        })
+        .catch(error => {
+          console.error(`Erreur lors de la récupération pour le mois ${targetMonth}:`, error);
+          return null;
+        });
+
+      monthlySummariesPromises.push(summaryPromise);
+    }
+
+    const allSummaries = await Promise.all(monthlySummariesPromises);
+
+    const yearlyData = allSummaries.filter(summary => summary !== null);
+
+    // Retourner les données mensuelles qui incluent maintenant les dépenses récurrentes
+    return yearlyData;
+  } catch (error) {
+    console.error('Erreur dans getYearlySummary:', error);
+    throw new Error('Failed to retrieve yearly summary');
+  }
+};
+
