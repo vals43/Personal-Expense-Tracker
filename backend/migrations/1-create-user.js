@@ -26,7 +26,7 @@ module.exports = {
       },
       currency: {
         type: Sequelize.STRING,
-        defaultValue: 'Ar'
+        defaultValue: 'US'
       },
       createdAt: {
         allowNull: false,

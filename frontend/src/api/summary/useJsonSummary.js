@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import moment from 'moment';
-import { getSummary, getDailySummary, getIncomesBySource, getExpensesBySource } from "./summaryService";
+import { getSummary, getDailySummary, getIncomesBySource, getExpensesBySource, getLastTransaction } from "./summaryService";
 
 export function useJsonSummary(month) {
   const [data, setData] = useState(null);
@@ -19,6 +19,32 @@ export function useJsonSummary(month) {
   }, [month]);
 
   return data;
+}
+
+export function useJsonLastTransaction() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchLastTransaction = async () => {
+      try {
+        setLoading(true);
+        const transactions = await getLastTransaction();
+        setData(transactions);
+        setError(null);
+      } catch (err) {
+        console.error("Erreur lors du fetch des dernières transactions:", err);
+        setError(err.message);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLastTransaction();
+  }, []);
+
+  return { data, loading, error };
 }
 
 export function useJsonDailySummary(startDate, endDate) {

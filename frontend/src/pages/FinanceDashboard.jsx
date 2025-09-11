@@ -9,31 +9,12 @@ import { TransactionCard } from '../components/card/TransactionCard';
 import { Calendar, CreditCardIcon } from 'lucide-react';
 import { ActionButtonsCard } from '../components/dashboard/ActionButtonsCard';
 import { useJsonUser } from '../api/user/useJsonUser.js';
-import { getYearlySummary, useJsonDailySummary, useJsonSummary } from '../api/summary/useJsonSummary.js';
+import { getYearlySummary, useJsonDailySummary, useJsonLastTransaction, useJsonSummary } from '../api/summary/useJsonSummary.js';
 import { getJsonExpenses } from '../api/expenses/expenseContext.jsx';
 import { getJsonIncomes } from '../api/incomes/getJsonIncomes.jsx';
 import BudgetAlertsDashboard from '../components/dashboard/budget-alerts-dashboard.jsx';
 
-const transactions = [
-  {
-    id: 1,
-    title: 'test',
-    subtitle: 'test category',
-    icon: <CreditCardIcon size={20} />,
-    date: '2025-10-24',
-    isIncome: true,
-    amount: 100,
-  },
-  {
-    id: 2,
-    title: 'test',
-    subtitle: 'test category',
-    icon: <CreditCardIcon size={20} />,
-    date: '2025-10-24',
-    isIncome: false,
-    amount: 100,
-  },
-];
+
 
 const formatDailyIncomes = (dailyData) => {
   if (!dailyData || !Array.isArray(dailyData)) {
@@ -69,6 +50,7 @@ export function FinanceDashboard() {
   const user = useJsonUser();
   const summary = useJsonSummary();
   const expenses = getJsonExpenses();
+  const transactions = useJsonLastTransaction().data
   const incomes = getJsonIncomes();
   const [monthlyData, setMonthlyData] = useState(null);
 
@@ -91,7 +73,7 @@ export function FinanceDashboard() {
     fetchMonthlyData();
   }, []); // Empty dependency array to fetch once on mount; add dependencies if dynamic updates are needed
 
-  if (!user || !summary || !expenses || !incomes || !dailyIncome || !dailyExpense || !monthlyData) {
+  if (!user || !summary || !expenses || !incomes || !dailyIncome || !dailyExpense || !transactions || !monthlyData) {
     return (
       <div className="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-sm text-center text-light-text dark:text-dark-text">
         <p className="text-gray-500 dark:text-gray-400">
@@ -110,6 +92,8 @@ export function FinanceDashboard() {
       </div>
     );
   }
+  console.log(transactions);
+  
 
   let sumExpenses = summary.totals.expenses;
   let sumIncomes = summary.totals.income;

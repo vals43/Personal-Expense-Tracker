@@ -17,6 +17,61 @@ export async function getSummary(month) {
   }
 }
 
+const getRecentTransactions = async (req, res) => {
+  try {
+      const userId = req.user.id;
+      if (!userId) {
+          return res.status(401).json({ error: 'Access token required' });
+      }
+
+      // Fetch expenses and incomes, ordered by date descending
+      const expenses = await Expense.findAll({
+          where: { userId },
+          order: [['date', 'DESC']],
+          limit: 5,
+          include: [{ model: Category, as: 'category', attributes: ['name'] }]
+      });
+
+      const incomes = await Income.findAll({
+          where: { userId },
+          order: [['date', 'DESC']],
+          limit: 5
+      });
+
+      // Map and format transactions to a consistent structure
+      const formattedExpenses = expenses.map(t => ({
+          id: t.id,
+          type: 'expense',
+          amount: parseFloat(t.amount),
+          date: t.date,
+          description: t.description,
+          category: t.category ? t.category.name : 'Uncategorized',
+          currency: t.currency
+      }));
+
+      const formattedIncomes = incomes.map(t => ({
+          id: t.id,
+          type: 'income',
+          amount: parseFloat(t.amount),
+          date: t.date,
+          description: t.description,
+          source: t.source,
+          currency: t.currency
+      }));
+
+      // Combine, sort, and get the last 5
+      const allTransactions = [...formattedExpenses, ...formattedIncomes];
+      allTransactions.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
+      
+      const recentTransactions = allTransactions.slice(0, 5);
+
+      res.status(200).json(recentTransactions);
+
+  } catch (error) {
+      console.error('Erreur dans getRecentTransactions:', error);
+      res.status(500).json({ error: error.message });
+  }
+};
 
 
 // New function to fetch a daily summary for a given period.
@@ -48,6 +103,19 @@ export async function getIncomesBySource() {
   } catch (error) {
     console.error(
       "Error in getIncomesBySource:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+}
+export async function getLastTransaction() {
+  try {
+    const response = await apiClient.get(`api/summary/transaction`);
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error in getLastTransaction:",
       error.response?.data || error.message
     );
     throw error;

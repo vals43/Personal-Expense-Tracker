@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useTransactions } from "../context/TransactionContext";
+
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { PlusIcon, ChartBarIcon, PieChartIcon } from "lucide-react";
@@ -12,15 +11,13 @@ import {
 import { getJsonExpenses } from "../api/expenses/expenseContext";
 import ExpenseList from "../components/expenses/ExpensesList";
 import ExpenseForm from "../components/expenses/ExpenseForm";
+import { useState } from "react";
 
 const Expenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeView, setActiveView] = useState("list");
   const [editingExpense, setEditingExpense] = useState(null);
 
-  const { getTransactionsByType } = useTransactions();
-
-  const expenses = getTransactionsByType("expense");
   const daily = useJsonDailySummary("2024-08-01", "2026-08-01");
   const summary = useJsonExpensesBySource();
   const exp = getJsonExpenses();
