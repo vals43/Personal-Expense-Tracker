@@ -14,7 +14,7 @@ const Expense = sequelize.define('Expense', {
   },
   date: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true
   },
   description: {
     type: DataTypes.TEXT,

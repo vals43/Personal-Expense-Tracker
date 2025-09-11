@@ -68,7 +68,7 @@ const createExpense = async (req, res) => {
     const receipt = req.file ? req.file.filename : null;
 
     // Validate essential fields and parse amount
-    if (!amount || !date || !categoryId) {
+    if (!amount || !categoryId) {
         return res.status(400).json({ error: 'Amount, date, and categoryId are required fields.' });
     }
 

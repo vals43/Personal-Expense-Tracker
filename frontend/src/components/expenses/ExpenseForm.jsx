@@ -153,6 +153,7 @@ const ExpenseForm = ({ initialData = null, onClose, isOpen }) => {
       } else {
         await handleCreateExpense(expenseData)
       }
+      console.log("Expense payload:", expenseData)
 
       if (onClose) onClose()
     } catch (error) {

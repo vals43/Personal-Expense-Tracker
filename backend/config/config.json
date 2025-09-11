@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "postgres",
-    "password": "morgan 47",
-    "database": "expense",
+    "password": "unknown",
+    "database": "expense_tracker",
     "host": "127.0.0.1",
     "dialect": "postgres"
   }
