@@ -2,9 +2,14 @@
   "name": "personal-expense-tracker",
   "version": "1.0.0",
   "main": "index.js",
+"private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:all": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""
+    "dev:all": "concurrently \"npm run dev --workspace frontend\" \"npm run dev --workspace backend\""
   },
   "repository": {
     "type": "git",
