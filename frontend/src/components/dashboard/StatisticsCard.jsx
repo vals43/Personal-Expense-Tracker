@@ -77,7 +77,7 @@ export function StatisticsCard() {
   return (
     <motion.div
       whileHover={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}
-      className="rounded-xl p-4 hover:scale-105 transition-all duration-500 bg-light-card dark:bg-dark-card"
+      className="rounded-xl p-4 border-l-4 border-b-4 dark:border-dark-border  hover:scale-105 transition-all duration-500 bg-light-card dark:bg-dark-card"
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-light-text dark:text-dark-text">Statistics</h3>
@@ -85,8 +85,8 @@ export function StatisticsCard() {
 
       <div className="flex flex-col md:flex-row items-center gap-6">
         {/* Chart */}
-        <div className="w-full md:w-1/2 h-64 md:h-72">
-          <ResponsiveContainer width="70%" height="70%">
+        <div className="w-full md:w-52 h-40 md:h-40 ">
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
@@ -109,10 +109,6 @@ export function StatisticsCard() {
               />
             </PieChart>
           </ResponsiveContainer>
-          <div className="text-center mt-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total Spending</p>
-            <p className="text-xl font-bold text-light-text dark:text-dark-text">{totalSpending.toFixed(2)} Ar</p>
-          </div>
         </div>
 
         {/* Legend / List */}
@@ -137,6 +133,10 @@ export function StatisticsCard() {
               </motion.li>
             ))}
           </ul>
+          <div className="text-center mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Spending</p>
+            <p className="text-xl font-bold text-light-text dark:text-dark-text">{totalSpending.toFixed(2)} Ar</p>
+          </div>
         </div>
       </div>
     </motion.div>

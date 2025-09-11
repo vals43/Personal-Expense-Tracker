@@ -1,18 +1,11 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/CardFull"
 import { Alert, AlertDescription, AlertTitle } from "../ui/Alert"
 import Button from "../ui/Button"
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import { AlertTriangle, TrendingUp, RefreshCw, DollarSign } from "lucide-react"
 import { getToken } from "../../api/auth/authService"
 
-const COLORS = {
-  expenses: "hsl(var(--chart-1))",
-  remaining: "hsl(var(--chart-2))",
-  danger: "hsl(var(--destructive))",
-}
 
 export default function BudgetAlertCard() {
   const [budgetData, setBudgetData] = useState(null)
@@ -20,15 +13,15 @@ export default function BudgetAlertCard() {
   const [error, setError] = useState(null)
 
   const fetchBudgetAlerts = async () => {
-      const token = getToken();
+    const token = getToken();
     try {
       setLoading(true)
       setError(null)
 
       const response = await fetch("http://localhost:8080/api/summary/alerts", {
         headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
 
@@ -70,10 +63,6 @@ export default function BudgetAlertCard() {
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <Button onClick={fetchBudgetAlerts} className="mt-4 w-full">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Réessayer
-          </Button>
         </CardContent>
       </Card>
     )
@@ -91,19 +80,36 @@ export default function BudgetAlertCard() {
     {
       name: "Dépenses",
       value: expenses,
-      color: alert ? COLORS.danger : COLORS.expenses,
+      color: "#b91c1c",
       percentage: expenseRatio.toFixed(1),
     },
     {
       name: "Restant",
       value: remaining,
-      color: COLORS.remaining,
+      color: "#166534",
       percentage: (100 - expenseRatio).toFixed(1),
     },
   ]
 
+  // Custom tooltip formatter
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload
+      return (
+        <div className="bg-light-card dark:bg-dark-card border z-50 border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-md">
+          <p className="text-sm font-medium text-foreground">{data.name}</p>
+          <p className="text-sm text-muted-foreground">
+            Montant: {data.value.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+          </p>
+          <p className="text-sm text-muted-foreground">Pourcentage: {data.percentage}%</p>
+        </div>
+      )
+    }
+    return null
+  }
+
   return (
-    <Card className="w-full max-w-2xl mx-auto backdrop-blur-md bg-background/80 border border-border/50">
+    <Card className="w-full max-w-2xl border-l-4 border-b-4 dark:border-dark-border mx-auto bg-light-card dark:bg-dark-card">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           {alert ? (
@@ -113,7 +119,11 @@ export default function BudgetAlertCard() {
           )}
           <CardTitle className="text-xl">Alerte Budget</CardTitle>
         </div>
-        <span className={`text-sm font-medium px-2 py-1 rounded ${alert ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
+        <span
+          className={`text-sm font-medium px-2 py-1 rounded ${
+            alert ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"
+          }`}
+        >
           {expenseRatio.toFixed(1)}% du revenu dépensé
         </span>
       </CardHeader>
@@ -163,12 +173,13 @@ export default function BudgetAlertCard() {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
+              <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
 
           {/* Center text */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
+            <div className="text-center mt-4">
               <p className="text-2xl font-bold text-foreground">{expenseRatio.toFixed(0)}%</p>
               <p className="text-xs text-muted-foreground">dépensé</p>
             </div>

@@ -3,7 +3,7 @@ import React from "react"
 export function Card({ children, className = "", ...props }) {
   return (
     <div
-      className={`rounded-lg border bg-white dark:bg-gray-900 shadow-sm ${className}`}
+      className={`rounded-lg bg-light-background dark:bg-dark-background shadow-sm ${className}`}
       {...props}
     >
       {children}
@@ -33,7 +33,7 @@ export function CardTitle({ children, className = "", ...props }) {
 export function CardDescription({ children, className = "", ...props }) {
   return (
     <p
-      className={`text-sm text-muted-foreground text-gray-600 dark:text-gray-400 ${className}`}
+      className={`text-sm text-muted-foreground text-light-text dark:text-dark-text ${className}`}
       {...props}
     >
       {children}

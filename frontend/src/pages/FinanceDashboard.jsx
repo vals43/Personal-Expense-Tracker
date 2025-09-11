@@ -140,15 +140,15 @@ export function FinanceDashboard() {
       </div>
 
       {/* Alertes budget */}
+      <div className="p-6 space-x-6 grid md:grid-cols-2 sm:grid-cols-1">
       <div className="mb-8">
         <BudgetAlertsDashboard />
       </div>
-
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      {/* Statistiques en une seule colonne */}
+      <div className="grid grid-cols-1  gap-6 mb-8">
         <StatsCard
           title="Dépenses"
-          className="bg-light-card dark:bg-dark-card"
+          className="bg-light-card h-fit dark:bg-dark-card"
           value={sumExpenses}
           trend={2.1}
           chart={
@@ -164,7 +164,7 @@ export function FinanceDashboard() {
         />
         <StatsCard
           title="Revenus"
-          className="bg-light-card dark:bg-dark-card"
+          className="bg-light-card h-fit dark:bg-dark-card"
           value={sumIncomes}
           trend={0}
           chart={
@@ -178,7 +178,9 @@ export function FinanceDashboard() {
             />
           }
         />
+        <StatisticsCard/>
       </div>
+    </div>
 
       {/* Transactions récentes */}
       <div>

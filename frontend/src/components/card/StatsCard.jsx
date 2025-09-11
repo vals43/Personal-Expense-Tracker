@@ -10,8 +10,8 @@ export default function StatsCard ({
   prefix = '',
   suffix = 'Ar'
 }) {
-  return <Card className={`${className}`}>
-      <div className="flex justify-between items-start mb-2">
+  return <Card className={`border-l-4 border-b-4 dark:border-dark-border ${className}`}>
+      <div className="flex  justify-between items-start mb-2">
         <div>
           <p className="text-sm mb-1">{title}</p>
           <div className="flex items-center">

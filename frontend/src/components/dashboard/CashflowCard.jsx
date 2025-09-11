@@ -97,10 +97,10 @@ export const CashflowCard = ({ monthlyData, "data-id": dataId }) => {
   }
 
   return (
-    <div className="text-foreground transition-all" data-id={dataId}>
+    <div className="text-foreground  transition-all" data-id={dataId}>
       <div className="lg:p-8">
         {/* Single Card */}
-        <div className="rounded-2xl bg-light-card dark:bg-dark-card p-4 sm:p-6 lg:p-8 shadow-lg">
+        <div className="rounded-2xl border-l-4 border-b-4 dark:border-dark-border bg-light-card dark:bg-dark-card p-4 sm:p-6 lg:p-8 shadow-lg">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">

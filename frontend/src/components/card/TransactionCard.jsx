@@ -6,7 +6,7 @@ export const TransactionCard = ({
   className = '',
   onTransactionClick
 }) => {
-  return <Card title={title} className={`${className}`}>
+  return <Card title={title} className={`${className} border-l-4 border-b-4 dark:border-dark-border`}>
       <div className="">
         {transactions.map(transaction => <div key={transaction.id} className="flex items-center p-2 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-border" onClick={() => onTransactionClick && onTransactionClick(transaction)}>
             {transaction.icon && <div className="mr-3 p-2 rounded-lg">
