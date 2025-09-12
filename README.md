@@ -83,3 +83,5 @@ npm run dev --workspace backend
 * The root `package.json` manages **workspaces** and **dev scripts**.
 * Each workspace (`frontend` and `backend`) has its own `package.json`.
 * `.gitignore` should be set up in each workspace and in the root to ignore `node_modules`, `.env`, and other temporary files.
+ 
+* Thanks 

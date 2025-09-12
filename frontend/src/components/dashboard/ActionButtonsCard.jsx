@@ -25,16 +25,6 @@ export function ActionButtonsCard() {
     color: "blue",
     delay: 0.1,
     actionType: "income"
-  }, {
-    title: "Request",
-    icon: <ClockIcon size={20} />,
-    color: "purple",
-    delay: 0.2
-  }, {
-    title: "History",
-    icon: <HistoryIcon size={20} />,
-    color: "gray",
-    delay: 0.3
   }];
 
   const handleButtonClick = (type) => {
