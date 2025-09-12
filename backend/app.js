@@ -36,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static('uploads'));
 
+
 const openApiSpec = yaml.load(fs.readFileSync(path.join(__dirname, 'docs/Expense Tracker API.yaml'), 'utf8'));
 
 // Configurer Swagger UI

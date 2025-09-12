@@ -158,6 +158,7 @@ const ExpenseForm = ({ initialData = null, onClose, isOpen }) => {
       if (onClose) onClose()
     } catch (error) {
       console.error("Error submitting expense:", error)
+
       setSubmissionError("Failed to save expense. Please try again.")
     } finally {
       setIsLoading(false)
