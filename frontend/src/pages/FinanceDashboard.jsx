@@ -156,7 +156,7 @@ export function FinanceDashboard() {
           title="Dépenses"
           className="bg-light-card h-fit dark:bg-dark-card"
           value={sumExpenses}
-          trend={2.1}
+          trend={-2.1}
           chart={
             <LineChart
               data={dataExpenses}
@@ -172,7 +172,7 @@ export function FinanceDashboard() {
           title="Revenus"
           className="bg-light-card h-fit dark:bg-dark-card"
           value={sumIncomes}
-          trend={0}
+          trend={-31}
           chart={
             <LineChart
               data={dataIncome}
